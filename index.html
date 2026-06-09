@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB A+ Prediction Engine</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#1a1d24; --line:#2a2f3a; --txt:#e8eaed; --mut:#9aa0aa;
+    --call:#2ea043; --accent:#2ea043; --warn:#e0b070;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:16px;max-width:760px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{font-size:1.4rem;margin:.2em 0}
+  .sub{color:var(--mut);font-size:.85rem}
+  .fresh{font-size:.8rem;padding:4px 10px;border-radius:6px;background:#13251a;border:1px solid #1e3a28}
+  .fresh.stale{background:#2a1e13;border-color:#3a2a1e;color:var(--warn)}
+  .toggle{cursor:pointer;background:var(--card);border:1px solid var(--line);color:var(--txt);
+    border-radius:6px;padding:6px 12px;font-size:.85rem}
+  .banner{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;margin:14px 0;text-align:center}
+  .track{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+  .track .big{font-size:1.8rem;font-weight:700;color:var(--accent)}
+  .track .n{color:var(--mut);font-size:.85rem}
+  .call{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;
+    border-inline-start:3px solid var(--call)}
+  .ctop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .teams{font-weight:600}
+  .pick{font-size:.8rem;padding:3px 9px;border-radius:20px;background:#13251a;color:#4ade80;border:1px solid #1e3a28;white-space:nowrap}
+  .meta{color:var(--mut);font-size:.78rem;margin-top:6px}
+  .result{margin-top:8px;font-size:.82rem;padding-top:8px;border-top:1px solid var(--line)}
+  .ok{color:var(--call)} .miss{color:#ef4444}
+  .secth{font-size:.8rem;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px}
+  footer{color:var(--mut);font-size:.75rem;margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
+  details{margin-top:8px} summary{cursor:pointer;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 id="title">MLB A+ Prediction Engine</h1>
+    <div class="sub" id="subtitle">Elo + stage discipline · speaks only on A+ setups (~5% of games)</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="fresh" id="freshBanner">Last updated: —</span>
+    <button class="toggle" id="langToggle">עב</button>
+  </div>
+</header>
+
+<div class="banner" id="banner"></div>
+<div class="track" id="trackPanel"></div>
+
+<div class="secth" id="todayHead">Today's A+ calls</div>
+<div id="todayCalls"></div>
+
+<div class="secth" id="recentHead">Recently decided</div>
+<div id="recentCalls"></div>
+
+<footer>
+  <details>
+    <summary id="howTitle">How it works</summary>
+    <p id="howText">An Elo rating predicts each game; a nine-stage read of each team's form
+    is layered on top. The engine "calls" a game only when the favorite is in a breakout
+    stage (8-9) AND confidence is at least 62% — the A+ slice, roughly 5% of games, which
+    hit about 70% in historical and cross-source holdout testing. On every other game it
+    stays silent. Live track record builds over the season.</p>
+  </details>
+</footer>
+
+<script>
+// ====== injected by baseball_dashboard.py ======
+const FRESH = {"status": "ok", "updated": "2026-06-08 21:23"}; // FRESH_LINE
+const TODAY = []; // TODAY_LINE
+const RECENT = []; // RECENT_LINE
+const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
+const TODAY_DATE = "2026-06-08"; // DATE_LINE
+const SCANNED = 8; // SCANNED_LINE
+// ================================================
+
+const I18N = {
+  en:{title:"MLB A+ Prediction Engine",
+      subtitle:"Elo + stage discipline · speaks only on A+ setups (~5% of games)",
+      fresh:"Last updated: ", stale:"⚠ Update failed — data from ",
+      trackTitle:"Live track record (decided A+ calls)", of:" of ",
+      pending:" awaiting result", noTrack:"No A+ calls decided yet — record builds over the season.",
+      todayHead:"Today's A+ calls", recentHead:"Recently decided",
+      quiet:"No A+ calls today — the engine is silent. That's the discipline: it speaks on ~5% of games.",
+      noRecent:"Nothing decided yet.",
+      pick:"pick", conf:"confidence", stage:"stage",
+      result:"Result: ", correct:"✓ correct", wrong:"✗ missed",
+      howTitle:"How it works",
+      howText:"An Elo rating predicts each game; a nine-stage read of each team's form is layered on top. The engine \"calls\" a game only when the favorite is in a breakout stage (8-9) AND confidence is at least 62% — the A+ slice, roughly 5% of games, which hit about 70% in historical and cross-source holdout testing. On every other game it stays silent. Live track record builds over the season."},
+  he:{title:"מנוע חיזוי MLB — קריאות A+",
+      subtitle:"Elo + משמעת שלבים · מדבר רק על סטאפ A+ (~5% מהמשחקים)",
+      fresh:"עודכן לאחרונה: ", stale:"⚠ העדכון נכשל — נתונים מ-",
+      trackTitle:"Track record חי (קריאות A+ שהוכרעו)", of:" מתוך ",
+      pending:" ממתינות לתוצאה", noTrack:"עדיין אין קריאות A+ שהוכרעו — הרשומה נבנית לאורך העונה.",
+      todayHead:"קריאות A+ של היום", recentHead:"הוכרעו לאחרונה",
+      quiet:"אין קריאות A+ היום — המנוע שותק. זו המשמעת: הוא מדבר על ~5% מהמשחקים.",
+      noRecent:"עדיין לא הוכרע דבר.",
+      pick:"בחירה", conf:"ביטחון", stage:"שלב",
+      result:"תוצאה: ", correct:"✓ צדקה", wrong:"✗ פספסה",
+      howTitle:"איך זה עובד",
+      howText:"דירוג Elo מנבא כל משחק; מעליו שכבת קריאת-שלבים (תשעה שלבים) של כושר כל קבוצה. המנוע \"קורא\" משחק רק כאשר הפייבוריט בשלב פריצה (8-9) וגם הביטחון לפחות 62% — פרוסת ה-A+, כ-5% מהמשחקים, שפגעה ב-~70% במבחני הולד-אאוט היסטוריים ובין-מקוריים. בכל שאר המשחקים הוא שותק. ה-track record החי נבנה לאורך העונה."}
+};
+
+let lang = "en";
+function pct(x){return Math.round(x*100)+"%"}
+
+function quietText(L){
+  if(SCANNED != null){
+    return (lang==="he")
+      ? `נסרקו ${SCANNED} משחקים היום · 0 עברו את סף ה-A+ (שלב 8/9 + ביטחון ≥62%). המנוע שותק — זו המשמעת.`
+      : `Scanned ${SCANNED} games today · 0 met the A+ bar (stage 8-9 + ≥62% confidence). The engine is silent — that's the discipline.`;
+  }
+  return L.quiet;
+}
+
+function callCard(c, L){
+  let resultHtml = "";
+  if(c.result){
+    const cls = c.correct==="1" ? "ok" : "miss";
+    const label = c.correct==="1" ? L.correct : L.wrong;
+    resultHtml = `<div class="result"><span class="${cls}">${L.result}${c.result} ${label}</span></div>`;
+  }
+  return `<div class="call">
+    <div class="ctop">
+      <span class="teams">${c.away} @ ${c.home}</span>
+      <span class="pick">${c.pick} ${pct(c.conf)}</span>
+    </div>
+    <div class="meta">${L.conf}: ${pct(c.conf)} · ${L.stage} ${c.pick_stage}</div>
+    ${resultHtml}
+  </div>`;
+}
+
+function render(){
+  const L = I18N[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang==="he") ? "rtl" : "ltr";
+  document.getElementById("title").textContent = L.title;
+  document.getElementById("subtitle").textContent = L.subtitle;
+  document.getElementById("langToggle").textContent = (lang==="en") ? "עב" : "EN";
+  document.getElementById("todayHead").textContent = L.todayHead;
+  document.getElementById("recentHead").textContent = L.recentHead;
+  document.getElementById("howTitle").textContent = L.howTitle;
+  document.getElementById("howText").textContent = L.howText;
+
+  const fb = document.getElementById("freshBanner");
+  if(FRESH.status==="stale"){ fb.className="fresh stale"; fb.textContent = L.stale + FRESH.updated; }
+  else { fb.className="fresh"; fb.textContent = L.fresh + FRESH.updated; }
+
+  document.getElementById("banner").textContent =
+    TODAY_DATE ? (lang==="he" ? `${TODAY_DATE} · ` : `${TODAY_DATE} · `) + (TODAY.length ? "" : quietText(L)) : "";
+  if(TODAY.length) document.getElementById("banner").style.display="none";
+  else document.getElementById("banner").style.display="block";
+
+  const tp = document.getElementById("trackPanel");
+  if(TRACK.decided>0){
+    const acc = Math.round(TRACK.correct/TRACK.decided*100);
+    tp.innerHTML = `<div>${L.trackTitle}</div><div class="big">${acc}%</div>
+      <div class="n">${TRACK.correct}${L.of}${TRACK.decided} · ${TRACK.pending}${L.pending}</div>`;
+  } else {
+    tp.innerHTML = `<div>${L.trackTitle}</div><div class="n">${L.noTrack}</div>`;
+  }
+
+  const tc = document.getElementById("todayCalls");
+  tc.innerHTML = TODAY.length ? TODAY.map(c=>callCard(c,L)).join("") : `<div class="meta">${quietText(L)}</div>`;
+
+  const rc = document.getElementById("recentCalls");
+  rc.innerHTML = RECENT.length ? RECENT.map(c=>callCard(c,L)).join("") : `<div class="meta">${L.noRecent}</div>`;
+}
+
+document.getElementById("langToggle").addEventListener("click",()=>{
+  lang = (lang==="en") ? "he" : "en"; render();
+});
+render();
+</script>
+</body>
+</html>
