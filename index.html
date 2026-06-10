@@ -39,6 +39,8 @@
   details h3{font-size:1rem;margin:14px 0 4px;color:var(--txt)}
   .howto-hint{margin-top:9px;background:transparent;border:1px solid var(--line);color:var(--mut);font-size:12.5px;padding:4px 11px;border-radius:7px;cursor:pointer;font-family:inherit}
   .howto-hint:hover{color:var(--txt);border-color:var(--mut)}
+  .empty-state{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:26px 22px;text-align:center;color:var(--mut);font-size:.95rem;line-height:1.6}
+  .empty-state svg{display:block;margin:0 auto 12px}
 </style>
 </head>
 <body>
@@ -74,7 +76,7 @@
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-10 12:53"}; // FRESH_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-10 14:32"}; // FRESH_LINE
 const TODAY = []; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
@@ -173,7 +175,7 @@ function render(){
   else { fb.className="fresh"; fb.textContent = L.fresh + FRESH.updated; }
 
   document.getElementById("banner").textContent =
-    TODAY_DATE ? (lang==="he" ? `${TODAY_DATE} · ` : `${TODAY_DATE} · `) + (TODAY.length ? "" : quietText(L)) : "";
+    TODAY_DATE ? `${TODAY_DATE}` : "";
   if(TODAY.length) document.getElementById("banner").style.display="none";
   else document.getElementById("banner").style.display="block";
 
@@ -187,7 +189,7 @@ function render(){
   }
 
   const tc = document.getElementById("todayCalls");
-  tc.innerHTML = TODAY.length ? TODAY.map(c=>callCard(c,L)).join("") : `<div class="meta">${quietText(L)}</div>`;
+  tc.innerHTML = TODAY.length ? TODAY.map(c=>callCard(c,L)).join("") : `<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--mut)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>${quietText(L)}</div>`;
 
   const rc = document.getElementById("recentCalls");
   rc.innerHTML = RECENT.length ? RECENT.map(c=>callCard(c,L)).join("") : `<div class="meta">${L.noRecent}</div>`;
