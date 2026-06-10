@@ -37,6 +37,8 @@
   footer{color:var(--mut);font-size:.75rem;margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
   details{margin-top:8px} summary{cursor:pointer;color:var(--mut)}
   details h3{font-size:1rem;margin:14px 0 4px;color:var(--txt)}
+  .howto-hint{margin-top:9px;background:transparent;border:1px solid var(--line);color:var(--mut);font-size:12.5px;padding:4px 11px;border-radius:7px;cursor:pointer;font-family:inherit}
+  .howto-hint:hover{color:var(--txt);border-color:var(--mut)}
 </style>
 </head>
 <body>
@@ -44,6 +46,7 @@
   <div>
     <h1 id="title">MLB A+ Prediction Engine</h1>
     <div class="sub" id="subtitle">Elo + stage discipline · speaks only on A+ setups (~5% of games)</div>
+    <button class="howto-hint" id="howtoHint" onclick="openHowto()"></button>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <span class="fresh" id="freshBanner">Last updated: —</span>
@@ -61,7 +64,7 @@
 <div id="recentCalls"></div>
 
 <footer>
-  <details>
+  <details id="howto">
     <summary id="howTitle">How to read this page</summary>
     <h3 id="howaTitle"></h3><p id="howaText"></p>
     <h3 id="howbTitle"></h3><p id="howbText"></p>
@@ -71,7 +74,7 @@
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-10 09:30"}; // FRESH_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-10 10:08"}; // FRESH_LINE
 const TODAY = []; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
@@ -90,6 +93,7 @@ const I18N = {
       noRecent:"Nothing decided yet.",
       pick:"pick", conf:"confidence", stage:"stage",
       result:"Result: ", correct:"✓ correct", wrong:"✗ missed",
+      howtoHint:"New here? How to read this page →",
       howTitle:"How to read this page",
       howaTitle:"What this page shows",
       howaText:"This page doesn't show every game today — only the ones the engine is genuinely confident about. At the single-game level, baseball is one of the most random of the major sports — a given game sits close to a coin flip. As the saying goes, even a great team loses about a third of its games and a poor team wins about a third; it's the other third that decides a season. So most matchups don't have a clear edge for anyone. Instead of forcing a call on a near-even game, the engine stays silent and speaks only when it has a strong read. A quiet day means the engine didn't find a call worth making — not that nothing was checked.",
@@ -107,6 +111,7 @@ const I18N = {
       noRecent:"עדיין לא הוכרע דבר.",
       pick:"בחירה", conf:"ביטחון", stage:"שלב",
       result:"תוצאה: ", correct:"✓ צדקה", wrong:"✗ פספסה",
+      howtoHint:"חדש כאן? איך לקרוא את הדף ←",
       howTitle:"איך לקרוא את הדף",
       howaTitle:"מה הדף מראה",
       howaText:"הדף הזה לא מציג את כל המשחקים של היום — רק את אלה שהמנוע באמת בטוח לגביהם. ברמת המשחק הבודד, בייסבול הוא מהאקראיים בספורט — משחק בודד קרוב להטלת מטבע. כמו שאומרים, אפילו קבוצה מצוינת מפסידה בערך שליש מהמשחקים, וקבוצה חלשה מנצחת בערך שליש; השליש האחר הוא שקובע עונה. אז ברוב המשחקים אין לאף צד יתרון ברור. במקום לכפות קריאה על משחק כמעט-שווה, המנוע שותק ומדבר רק כשיש לו קריאה חזקה. יום שקט אומר שהמנוע לא מצא קריאה ששווה לעשות — לא שכלום לא נבדק.",
@@ -161,6 +166,7 @@ function render(){
   document.getElementById("howbText").textContent = L.howbText;
   document.getElementById("howcTitle").textContent = L.howcTitle;
   document.getElementById("howcText").textContent = L.howcText;
+  document.getElementById("howtoHint").textContent = L.howtoHint;
 
   const fb = document.getElementById("freshBanner");
   if(FRESH.status==="stale"){ fb.className="fresh stale"; fb.textContent = L.stale + FRESH.updated; }
@@ -185,6 +191,11 @@ function render(){
 
   const rc = document.getElementById("recentCalls");
   rc.innerHTML = RECENT.length ? RECENT.map(c=>callCard(c,L)).join("") : `<div class="meta">${L.noRecent}</div>`;
+}
+
+function openHowto(){
+  var d = document.getElementById("howto");
+  if(d){ d.open = true; d.scrollIntoView({behavior:"smooth", block:"start"}); }
 }
 
 document.getElementById("langToggle").addEventListener("click",()=>{
