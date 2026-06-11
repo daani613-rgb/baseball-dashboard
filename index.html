@@ -31,6 +31,7 @@
   .teams{font-weight:600}
   .pick{font-size:.8rem;padding:3px 9px;border-radius:20px;background:#13251a;color:#4ade80;border:1px solid #1e3a28;white-space:nowrap}
   .meta{color:var(--mut);font-size:.78rem;margin-top:6px}
+  .cdate{font-size:.72rem;color:var(--mut);margin-bottom:4px}
   .result{margin-top:8px;font-size:.82rem;padding-top:8px;border-top:1px solid var(--line)}
   .ok{color:var(--call)} .miss{color:#ef4444}
   .secth{font-size:.8rem;font-weight:400;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px}
@@ -76,11 +77,11 @@
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-10 14:32"}; // FRESH_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-11 00:02"}; // FRESH_LINE
 const TODAY = []; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
-const TODAY_DATE = "2026-06-10"; // DATE_LINE
+const TODAY_DATE = "2026-06-11"; // DATE_LINE
 const SCANNED = null; // SCANNED_LINE
 // ================================================
 
@@ -125,6 +126,8 @@ const I18N = {
 
 let lang = "en";
 function pct(x){return Math.round(x*100)+"%"}
+function fmtDate(s){ const p=String(s).split("-"); if(p.length!==3) return s;
+  return (lang==="he") ? p[2]+"."+p[1] : p[1]+"."+p[2]; }   // he DD.MM · en MM.DD
 
 function quietText(L){
   if(SCANNED != null){
@@ -135,14 +138,16 @@ function quietText(L){
   return L.quiet;
 }
 
-function callCard(c, L){
+function callCard(c, L, showDate){
   let resultHtml = "";
   if(c.result){
     const cls = c.correct==="1" ? "ok" : "miss";
     const label = c.correct==="1" ? L.correct : L.wrong;
     resultHtml = `<div class="result"><span class="${cls}">${L.result}${c.result} ${label}</span></div>`;
   }
+  const dateRow = showDate ? `<div class="cdate">${fmtDate(c.date)}</div>` : "";
   return `<div class="call">
+    ${dateRow}
     <div class="ctop">
       <span class="teams">${c.away} @ ${c.home}</span>
       <span class="pick">${c.pick} ${pct(c.conf)}</span>
@@ -175,7 +180,7 @@ function render(){
   else { fb.className="fresh"; fb.textContent = L.fresh + FRESH.updated; }
 
   document.getElementById("banner").textContent =
-    TODAY_DATE ? `${TODAY_DATE}` : "";
+    TODAY_DATE ? `${fmtDate(TODAY_DATE)}` : "";
   if(TODAY.length) document.getElementById("banner").style.display="none";
   else document.getElementById("banner").style.display="block";
 
@@ -192,7 +197,7 @@ function render(){
   tc.innerHTML = TODAY.length ? TODAY.map(c=>callCard(c,L)).join("") : `<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--mut)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>${quietText(L)}</div>`;
 
   const rc = document.getElementById("recentCalls");
-  rc.innerHTML = RECENT.length ? RECENT.map(c=>callCard(c,L)).join("") : `<div class="meta">${L.noRecent}</div>`;
+  rc.innerHTML = RECENT.length ? RECENT.map(c=>callCard(c,L,true)).join("") : `<div class="meta">${L.noRecent}</div>`;
 }
 
 function openHowto(){
