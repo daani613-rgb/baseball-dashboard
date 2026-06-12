@@ -32,6 +32,8 @@
   .kpi .l{color:var(--mut);font-size:.78rem;margin-top:4px;line-height:1.4}
   .call{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;
     border-inline-start:3px solid var(--call)}
+  .call.silent{opacity:.6;border-inline-start-color:var(--line)}  /* שתיקה: מעומעם אך קריא; A+ נשאר בולט */
+  .silent-tag{color:var(--mut);font-style:italic}
   .ctop{display:flex;justify-content:space-between;align-items:center;gap:10px}
   .teams{font-weight:600}
   .pick{font-size:.8rem;padding:3px 9px;border-radius:20px;background:#13251a;color:#4ade80;border:1px solid #1e3a28;white-space:nowrap}
@@ -84,8 +86,8 @@
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-12 01:02"}; // FRESH_LINE
-const TODAY = []; // TODAY_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-12 01:40"}; // FRESH_LINE
+const TODAY = [{"date": "2026-06-12", "away": "COL", "home": "OAK", "pick": "OAK", "conf": 0.631, "pick_stage": 2, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "LAN", "home": "CHA", "pick": "LAN", "conf": 0.593, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "DET", "home": "CLE", "pick": "CLE", "conf": 0.586, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "TBA", "home": "ANA", "pick": "TBA", "conf": 0.563, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "PHI", "home": "MIL", "pick": "MIL", "conf": 0.556, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "ATL", "home": "NYN", "pick": "ATL", "conf": 0.537, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "TEX", "home": "BOS", "pick": "BOS", "conf": 0.531, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "SLN", "home": "MIN", "pick": "SLN", "conf": 0.529, "pick_stage": 7, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "MIA", "home": "PIT", "pick": "PIT", "conf": 0.527, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "ARI", "home": "CIN", "pick": "CIN", "conf": 0.525, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "SEA", "home": "WAS", "pick": "SEA", "conf": 0.522, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "NYA", "home": "TOR", "pick": "NYA", "conf": 0.519, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "CHN", "home": "SFN", "pick": "CHN", "conf": 0.513, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "HOU", "home": "KCA", "pick": "KCA", "conf": 0.506, "pick_stage": 1, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "SDN", "home": "BAL", "pick": "BAL", "conf": 0.502, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה"}]; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
 const ACCURACY = {"aplus": 70.2, "aplus_pct": 5.4, "stage": 60.9, "overall": 58.1, "base": 53.3, "games": 10616}; // ACCURACY_LINE
@@ -104,7 +106,8 @@ const I18N = {
       kStage:"When the team is in a high stage (6/8/9), it's right {v}%.",
       kOverall:"Overall {v}% — beats the always-home baseline ({base}%).",
       kGames:"Measured on {v} games (test seasons from 2019).",
-      todayHead:"Today's A+ calls", recentHead:"Recently decided",
+      todayHead:"Today's games", recentHead:"Recently decided",
+      silentTag:"too close — silent",
       quiet:"No A+ calls today — the engine is silent. That's the discipline: it speaks on ~5% of games.",
       noRecent:"Nothing decided yet.",
       pick:"pick", conf:"confidence", stage:"stage",
@@ -112,9 +115,9 @@ const I18N = {
       howtoHint:"New here? How to read this page →",
       howTitle:"How to read this page",
       howaTitle:"What this page shows",
-      howaText:"This page doesn't show every game today — only the ones the engine is genuinely confident about. At the single-game level, baseball is one of the most random of the major sports — a given game sits close to a coin flip. As the saying goes, even a great team loses about a third of its games and a poor team wins about a third; it's the other third that decides a season. So most matchups don't have a clear edge for anyone. Instead of forcing a call on a near-even game, the engine stays silent and speaks only when it has a strong read. A quiet day means the engine didn't find a call worth making — not that nothing was checked.",
+      howaText:"This page shows every game today with its odds. High-confidence (A+) calls are highlighted; the rest are dimmed and tagged 'too close — silent'. The discipline is unchanged — the engine still only 'calls' A+, you can now also see what it chose to stay silent on. At the single-game level, baseball is one of the most random of the major sports — a given game sits close to a coin flip, and most matchups don't have a clear edge for anyone. That's why the engine highlights only the few it has a strong read on, and stays silent on the rest rather than forcing a call.",
       howbTitle:"Confidence and A+",
-      howbText:"When the engine does make a call, it shows its pick and a confidence number — how likely it thinks the pick is to win. Baseball has no draw, so it's just two outcomes: this team or the other. \"A+\" is the bar a game must clear to appear at all: the engine's strongest stages, with confidence of at least 62%. Only about 1 game in 20 clears it. Confidence is not certainty — a 62% call still loses nearly 4 times in 10. That's the nature of baseball, and it's exactly why the engine stays quiet unless the edge is real. The track record panel fills in over the season, so you can watch how the calls actually do.",
+      howbText:"When the engine does make a call, it shows its pick and a confidence number — how likely it thinks the pick is to win. Baseball has no draw, so it's just two outcomes: this team or the other. \"A+\" is the bar a game must clear to be called and highlighted: the engine's strongest stages, with confidence of at least 62%. Only about 1 game in 20 clears it. Confidence is not certainty — a 62% call still loses nearly 4 times in 10. That's the nature of baseball, and it's exactly why the engine stays quiet unless the edge is real. The track record panel fills in over the season, so you can watch how the calls actually do.",
       howcTitle:"The caveat",
       howcText:"The picks are an edge in reading the game, not a promise. Even a confident call loses sometimes — that's baseball, where randomness runs high. The engine was tested against historical results and naive logic, not against bookmaker lines, so a good track record here means it reads the game well — not that it beats the market or guarantees easy money."},
   he:{title:"מנוע חיזוי MLB — קריאות A+",
@@ -127,7 +130,8 @@ const I18N = {
       kStage:"כשהקבוצה בשלב גבוה (6/8/9), צודק ב-{v}%.",
       kOverall:"דיוק כללי {v}% — מנצח את בסיס 'תמיד-בית' ({base}%).",
       kGames:"נמדד על {v} משחקים (עונות-מבחן מ-2019).",
-      todayHead:"קריאות A+ של היום", recentHead:"הוכרעו לאחרונה",
+      todayHead:"משחקי היום", recentHead:"הוכרעו לאחרונה",
+      silentTag:"צמוד — שתיקה",
       quiet:"אין קריאות A+ היום — המנוע שותק. זו המשמעת: הוא מדבר על ~5% מהמשחקים.",
       noRecent:"עדיין לא הוכרע דבר.",
       pick:"בחירה", conf:"ביטחון", stage:"שלב",
@@ -135,9 +139,9 @@ const I18N = {
       howtoHint:"חדש כאן? איך לקרוא את הדף ←",
       howTitle:"איך לקרוא את הדף",
       howaTitle:"מה הדף מראה",
-      howaText:"הדף הזה לא מציג את כל המשחקים של היום — רק את אלה שהמנוע באמת בטוח לגביהם. ברמת המשחק הבודד, בייסבול הוא מהאקראיים בספורט — משחק בודד קרוב להטלת מטבע. כמו שאומרים, אפילו קבוצה מצוינת מפסידה בערך שליש מהמשחקים, וקבוצה חלשה מנצחת בערך שליש; השליש האחר הוא שקובע עונה. אז ברוב המשחקים אין לאף צד יתרון ברור. במקום לכפות קריאה על משחק כמעט-שווה, המנוע שותק ומדבר רק כשיש לו קריאה חזקה. יום שקט אומר שהמנוע לא מצא קריאה ששווה לעשות — לא שכלום לא נבדק.",
+      howaText:"הדף מציג את כל משחקי-היום עם הסיכויים. הקריאות בביטחון גבוה (A+) מודגשות; השאר מוצגים מעומעמים ומסומנים 'צמוד — שתיקה'. המשמעת לא השתנתה — המנוע עדיין 'מדבר' רק על A+, רק שעכשיו רואים גם את מה שהוא בחר לשתוק עליו. ברמת המשחק הבודד, בייסבול הוא מהאקראיים בספורט — משחק בודד קרוב להטלת מטבע, וברוב המשחקים אין לאף צד יתרון ברור. לכן המנוע מדגיש רק את המעטים שיש לו עליהם קריאה חזקה, ושותק על השאר במקום לכפות קריאה.",
       howbTitle:"ביטחון ו-A+",
-      howbText:"כשהמנוע כן עושה קריאה, הוא מציג את הבחירה שלו ומספר ביטחון — כמה הוא מעריך שהבחירה תנצח. בבייסבול אין תיקו, אז יש רק שתי תוצאות: הקבוצה הזו או השנייה. \"A+\" הוא הרף שמשחק חייב לעבור כדי להופיע בכלל: השלבים החזקים של המנוע, עם ביטחון של 62% לפחות. רק בערך משחק אחד מתוך 20 עובר אותו. ביטחון הוא לא ודאות — קריאה של 62% עדיין מפסידה כמעט 4 פעמים מתוך 10. זה האופי של בייסבול, וזו בדיוק הסיבה שהמנוע שותק אלא אם היתרון אמיתי. פאנל ה-track record מתמלא לאורך העונה, כך שאפשר לראות איך הקריאות באמת מתפקדות.",
+      howbText:"כשהמנוע כן עושה קריאה, הוא מציג את הבחירה שלו ומספר ביטחון — כמה הוא מעריך שהבחירה תנצח. בבייסבול אין תיקו, אז יש רק שתי תוצאות: הקבוצה הזו או השנייה. \"A+\" הוא הרף שמשחק חייב לעבור כדי להיקרא ולהיות מודגש: השלבים החזקים של המנוע, עם ביטחון של 62% לפחות. רק בערך משחק אחד מתוך 20 עובר אותו. ביטחון הוא לא ודאות — קריאה של 62% עדיין מפסידה כמעט 4 פעמים מתוך 10. זה האופי של בייסבול, וזו בדיוק הסיבה שהמנוע שותק אלא אם היתרון אמיתי. פאנל ה-track record מתמלא לאורך העונה, כך שאפשר לראות איך הקריאות באמת מתפקדות.",
       howcTitle:"הסייג",
       howcText:"הקריאות הן יתרון בקריאת המשחק, לא הבטחה. גם קריאה בטוחה מפסידה לפעמים — זה בייסבול, שבו האקראיות גבוהה. המנוע נבדק מול תוצאות היסטוריות והיגיון נאיבי, לא מול קווי מהמרים — אז track record טוב כאן אומר שהוא קורא את המשחק היטב, לא שהוא מנצח את השוק או מבטיח כסף קל."}
 };
@@ -164,13 +168,15 @@ function callCard(c, L, showDate){
     resultHtml = `<div class="result"><span class="${cls}">${L.result}${c.result} ${label}</span></div>`;
   }
   const dateRow = showDate ? `<div class="cdate">${fmtDate(c.date)}</div>` : "";
-  return `<div class="call">
+  const silent = (c.verdict === "שתיקה");   // רק שתיקות-היום מעומעמות; RECENT (verdict "call") נשאר בולט
+  const silentTag = silent ? ` · <span class="silent-tag">${L.silentTag}</span>` : "";
+  return `<div class="call${silent ? " silent" : ""}">
     ${dateRow}
     <div class="ctop">
       <span class="teams">${c.away} @ ${c.home}</span>
       <span class="pick">${c.pick} ${pct(c.conf)}</span>
     </div>
-    <div class="meta">${L.conf}: ${pct(c.conf)} · ${L.stage} ${c.pick_stage}</div>
+    <div class="meta">${L.conf}: ${pct(c.conf)} · ${L.stage} ${c.pick_stage}${silentTag}</div>
     ${resultHtml}
   </div>`;
 }
