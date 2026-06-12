@@ -72,7 +72,7 @@
 <h2 class="secth" id="todayHead">Today's A+ calls</h2>
 <div id="todayCalls" role="status"></div>
 
-<h2 class="secth" id="recentHead">Recently decided</h2>
+<h2 class="secth" id="recentHead">Decided this season</h2>
 <div id="recentCalls" role="status"></div>
 
 <footer>
@@ -86,7 +86,7 @@
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-12 01:40"}; // FRESH_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-12 01:57"}; // FRESH_LINE
 const TODAY = [{"date": "2026-06-12", "away": "COL", "home": "OAK", "pick": "OAK", "conf": 0.631, "pick_stage": 2, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "LAN", "home": "CHA", "pick": "LAN", "conf": 0.593, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "DET", "home": "CLE", "pick": "CLE", "conf": 0.586, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "TBA", "home": "ANA", "pick": "TBA", "conf": 0.563, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "PHI", "home": "MIL", "pick": "MIL", "conf": 0.556, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "ATL", "home": "NYN", "pick": "ATL", "conf": 0.537, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "TEX", "home": "BOS", "pick": "BOS", "conf": 0.531, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "SLN", "home": "MIN", "pick": "SLN", "conf": 0.529, "pick_stage": 7, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "MIA", "home": "PIT", "pick": "PIT", "conf": 0.527, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "ARI", "home": "CIN", "pick": "CIN", "conf": 0.525, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "SEA", "home": "WAS", "pick": "SEA", "conf": 0.522, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "NYA", "home": "TOR", "pick": "NYA", "conf": 0.519, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "CHN", "home": "SFN", "pick": "CHN", "conf": 0.513, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "HOU", "home": "KCA", "pick": "KCA", "conf": 0.506, "pick_stage": 1, "result": "", "correct": "", "verdict": "שתיקה"}, {"date": "2026-06-12", "away": "SDN", "home": "BAL", "pick": "BAL", "conf": 0.502, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה"}]; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
@@ -106,8 +106,8 @@ const I18N = {
       kStage:"When the team is in a high stage (6/8/9), it's right {v}%.",
       kOverall:"Overall {v}% — beats the always-home baseline ({base}%).",
       kGames:"Measured on {v} games (test seasons from 2019).",
-      todayHead:"Today's games", recentHead:"Recently decided",
-      silentTag:"too close — silent",
+      todayHead:"Today's games", recentHead:"Decided this season",
+      silentTag:"too close — silent", marginLbl:"margin",
       quiet:"No A+ calls today — the engine is silent. That's the discipline: it speaks on ~5% of games.",
       noRecent:"Nothing decided yet.",
       pick:"pick", conf:"confidence", stage:"stage",
@@ -130,8 +130,8 @@ const I18N = {
       kStage:"כשהקבוצה בשלב גבוה (6/8/9), צודק ב-{v}%.",
       kOverall:"דיוק כללי {v}% — מנצח את בסיס 'תמיד-בית' ({base}%).",
       kGames:"נמדד על {v} משחקים (עונות-מבחן מ-2019).",
-      todayHead:"משחקי היום", recentHead:"הוכרעו לאחרונה",
-      silentTag:"צמוד — שתיקה",
+      todayHead:"משחקי היום", recentHead:"הוכרעו העונה",
+      silentTag:"צמוד — שתיקה", marginLbl:"הפרש",
       quiet:"אין קריאות A+ היום — המנוע שותק. זו המשמעת: הוא מדבר על ~5% מהמשחקים.",
       noRecent:"עדיין לא הוכרע דבר.",
       pick:"בחירה", conf:"ביטחון", stage:"שלב",
@@ -165,7 +165,10 @@ function callCard(c, L, showDate){
   if(c.result){
     const cls = c.correct==="1" ? "ok" : "miss";
     const label = c.correct==="1" ? L.correct : L.wrong;
-    resultHtml = `<div class="result"><span class="${cls}">${L.result}${c.result} ${label}</span></div>`;
+    // הפרש מחושב בתצוגה בלבד מתוך result בפורמט "winner (A-H)"; fail-safe אם אין 2 מספרים
+    const m = String(c.result).match(/\((\d+)\s*-\s*(\d+)\)/);
+    const marginTxt = m ? ` · ${L.marginLbl} ${Math.abs(+m[1]-+m[2])}` : "";
+    resultHtml = `<div class="result"><span class="${cls}">${L.result}${c.result}${marginTxt} ${label}</span></div>`;
   }
   const dateRow = showDate ? `<div class="cdate">${fmtDate(c.date)}</div>` : "";
   const silent = (c.verdict === "שתיקה");   // רק שתיקות-היום מעומעמות; RECENT (verdict "call") נשאר בולט
