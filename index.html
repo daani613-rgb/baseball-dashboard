@@ -25,6 +25,11 @@
   .track{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
   .track .big{font-size:1.8rem;font-weight:700;color:var(--accent)}
   .track .n{color:var(--mut);font-size:.85rem}
+  .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .kpi .n{font-size:1.6rem;font-weight:700;color:var(--accent)}
+  .kpi .n small{font-size:.9rem;font-weight:600}
+  .kpi .l{color:var(--mut);font-size:.78rem;margin-top:4px;line-height:1.4}
   .call{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;
     border-inline-start:3px solid var(--call)}
   .ctop{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -58,6 +63,8 @@
 </header>
 
 <div class="banner" id="banner"></div>
+<h2 class="secth" id="accHead">Validated accuracy (holdout test)</h2>
+<div class="kpis" id="kpiStrip"></div>
 <div class="track" id="trackPanel"></div>
 
 <h2 class="secth" id="todayHead">Today's A+ calls</h2>
@@ -77,12 +84,13 @@
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-11 23:43"}; // FRESH_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-12 01:02"}; // FRESH_LINE
 const TODAY = []; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
-const TODAY_DATE = "2026-06-11"; // DATE_LINE
-const SCANNED = 8; // SCANNED_LINE
+const ACCURACY = {"aplus": 70.2, "aplus_pct": 5.4, "stage": 60.9, "overall": 58.1, "base": 53.3, "games": 10616}; // ACCURACY_LINE
+const TODAY_DATE = "2026-06-12"; // DATE_LINE
+const SCANNED = 15; // SCANNED_LINE
 // ================================================
 
 const I18N = {
@@ -91,6 +99,11 @@ const I18N = {
       fresh:"Last updated: ", stale:"⚠ Update failed — data from ",
       trackTitle:"Live track record (decided A+ calls)", of:" of ",
       pending:" awaiting result", noTrack:"No A+ calls decided yet — record builds over the season.",
+      accHead:"Validated accuracy (holdout test)",
+      kAplus:"On its strongest calls — A+: stage 8/9 + confidence ≥62%, ~{pct}% of games — it's right {v}%.",
+      kStage:"When the team is in a high stage (6/8/9), it's right {v}%.",
+      kOverall:"Overall {v}% — beats the always-home baseline ({base}%).",
+      kGames:"Measured on {v} games (test seasons from 2019).",
       todayHead:"Today's A+ calls", recentHead:"Recently decided",
       quiet:"No A+ calls today — the engine is silent. That's the discipline: it speaks on ~5% of games.",
       noRecent:"Nothing decided yet.",
@@ -109,6 +122,11 @@ const I18N = {
       fresh:"עודכן לאחרונה: ", stale:"⚠ העדכון נכשל — נתונים מ-",
       trackTitle:"Track record חי (קריאות A+ שהוכרעו)", of:" מתוך ",
       pending:" ממתינות לתוצאה", noTrack:"עדיין אין קריאות A+ שהוכרעו — הרשומה נבנית לאורך העונה.",
+      accHead:"דיוק מאומת (מבחן holdout)",
+      kAplus:"בקריאות החזקות ביותר — A+: שלב 8/9 + ביטחון ≥62%, ~{pct}% מהמשחקים — צודק ב-{v}%.",
+      kStage:"כשהקבוצה בשלב גבוה (6/8/9), צודק ב-{v}%.",
+      kOverall:"דיוק כללי {v}% — מנצח את בסיס 'תמיד-בית' ({base}%).",
+      kGames:"נמדד על {v} משחקים (עונות-מבחן מ-2019).",
       todayHead:"קריאות A+ של היום", recentHead:"הוכרעו לאחרונה",
       quiet:"אין קריאות A+ היום — המנוע שותק. זו המשמעת: הוא מדבר על ~5% מהמשחקים.",
       noRecent:"עדיין לא הוכרע דבר.",
@@ -192,6 +210,23 @@ function render(){
   } else {
     tp.innerHTML = `<div>${L.trackTitle}</div><div class="n">${L.noTrack}</div>`;
   }
+
+  // קוביות-דיוק מאומת (holdout). הרף הוא 70% — בייסבול אקראי יותר, לא 85% של NBA.
+  // רק 4 מדדים שבאמת חושבו: A+ · שלב-גבוה · כללי-מול-בסיס · גודל-מדגם. אין קריאות-חוץ/עייפות (אין לבייסבול).
+  const A = ACCURACY;
+  document.getElementById("accHead").textContent = L.accHead;
+  const kp = document.getElementById("kpiStrip");
+  if(A.games>0){
+    const g = A.games.toLocaleString();
+    const cubes = [
+      {n:A.aplus,  u:"%", l:L.kAplus.replace("{v}",A.aplus).replace("{pct}",A.aplus_pct)},
+      {n:A.stage,  u:"%", l:L.kStage.replace("{v}",A.stage)},
+      {n:A.overall,u:"%", l:L.kOverall.replace("{v}",A.overall).replace("{base}",A.base)},
+      {n:g,        u:"",  l:L.kGames.replace("{v}",g)},
+    ];
+    kp.innerHTML = cubes.map(c=>`<div class="kpi"><div class="n">${c.n}<small>${c.u}</small></div><div class="l">${c.l}</div></div>`).join("");
+    document.getElementById("accHead").style.display="";
+  } else { kp.innerHTML=""; document.getElementById("accHead").style.display="none"; }
 
   const tc = document.getElementById("todayCalls");
   tc.innerHTML = TODAY.length ? TODAY.map(c=>callCard(c,L)).join("") : `<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--mut)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>${quietText(L)}</div>`;
