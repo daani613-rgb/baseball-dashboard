@@ -103,108 +103,138 @@
   #tab-totals .t-score .n{color:var(--mut);font-size:.82rem}
   #tab-totals .t-empty{background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--mut)}
   #tab-totals .t-more{min-height:44px;width:100%;margin-top:8px;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:9px;cursor:pointer;font-family:inherit}
-  #tab-totals .t-en{color:var(--mut);font-size:.85em}
-  #t_howto{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:12px;max-width:560px;width:92%;padding:0}
-  #t_howto::backdrop{background:rgba(0,0,0,.6)}
-  #t_howto .dh{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
-  #t_howto .db{padding:16px;max-height:70vh;overflow:auto} #t_howto ol{padding-inline-start:20px} #t_howto li{margin:10px 0}
-  #t_howto .dc{min-height:44px;min-width:44px;background:transparent;border:1px solid var(--line);color:var(--txt);border-radius:8px;cursor:pointer;font-size:1.1rem}
-  #t_toTop{position:fixed;bottom:18px;left:18px;display:none;align-items:center;gap:6px;min-height:44px;
-        padding:10px 14px;background:#4ade80;color:#0f1419;border:none;border-radius:999px;cursor:pointer;font-weight:700;z-index:50;font-family:inherit}
-  #t_toTop.show{display:inline-flex}
+
+  /* ===== unified cube (one card per game: winner on top + totals accordion + result) ===== */
+  .chips{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+  .chip{min-height:44px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);
+        color:var(--txt);font-size:.9rem;cursor:pointer;font-family:inherit}
+  .chip[aria-pressed="true"]{background:#1e3a28;color:#4ade80;border-color:#2ea043;font-weight:700}
+  .jump{display:inline-block;margin:2px 0 8px;color:#58a6ff;font-size:.85rem;text-decoration:none}
+  .cube{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin:10px 0}
+  .cube.ap{border-inline-start:3px solid #f59e0b}
+  .cube-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+  .cflags{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+  .cflag{font-size:.7rem;padding:2px 8px;border-radius:999px;background:#262c38;color:var(--txt)}
+  .cflag.ap{background:#f59e0b;color:#0f1419;font-weight:700} .cflag.warn{background:#fbbf24;color:#0f1419}
+  /* 2-segment bar (Home|Away / Over|Under) — כמו המונדיאל, טקסט-כהה על הפלחים */
+  .segrow{display:flex;align-items:center;gap:8px;margin:4px 0}
+  .seglbl{width:66px;font-size:.74rem;color:var(--mut)}
+  .seg2{flex:1;display:flex;height:24px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .seg{display:flex;align-items:center;justify-content:center;color:#0f1419;font-size:.72rem;font-weight:700;white-space:nowrap;min-width:0;overflow:hidden}
+  .seg.h{background:#4ade80} .seg.a{background:#60a5fa} .seg.o{background:#4ade80} .seg.u{background:#fbbf24}
+  .axis2{display:flex;font-size:.7rem;color:var(--mut);margin:2px 0 4px}
+  .axis2 span{text-align:center}
+  .pickline2{margin-top:9px;font-size:.9rem;font-weight:600}
+  .acc{margin-top:10px;border:1px solid var(--line);border-radius:9px;background:#13161c;overflow:hidden}
+  .acc>summary{cursor:pointer;padding:10px 12px;font-weight:600;font-size:.9rem;min-height:44px;
+        display:flex;align-items:center;gap:6px;list-style:none}
+  .acc>summary::-webkit-details-marker{display:none}
+  .acc[open]>summary{border-bottom:1px solid var(--line)}
+  .acc-body{padding:10px 12px}
+  .tsub{color:var(--mut);font-size:.8rem;margin-bottom:4px}
+  .treasons{font-size:.8rem;color:var(--mut);margin-top:6px}
+  .t-push{color:var(--mut)}
+  .restail{margin-top:10px;font-size:.82rem;padding-top:8px;border-top:1px solid var(--line)}
+  .restail.pend{color:var(--mut)}
+
+  /* ===== shared: guide modal (worldcup pattern) · disclaimer modal · footer · back-to-top ===== */
+  .gv-modal{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:200;display:none;
+            overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 10px}
+  .gv-modal.open{display:block}
+  .gv-card{max-width:640px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .gv-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;
+           border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+  .gv-head strong{font-size:1.05rem}
+  .gv-close{min-height:44px;min-width:44px;background:transparent;border:1px solid var(--line);color:var(--txt);
+            border-radius:8px;cursor:pointer;font-size:1.15rem}
+  .gv-body{padding:16px}
+  .gv-sec{margin:0 0 18px} .gv-ey{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  .gv-num{background:#1e3a28;color:#4ade80;font-weight:800;font-size:.78rem;border-radius:6px;padding:2px 8px}
+  .gv-sec h3{font-size:1rem;margin:0} .gv-sec p{margin:.35em 0;font-size:.9rem} .gv-lead{font-weight:600}
+  .gv-sec ul{margin:.35em 0;padding-inline-start:20px} .gv-sec li{margin:.3em 0;font-size:.9rem}
+  .gv-callout{background:#13251a;border:1px solid #1e3a28;border-radius:9px;padding:9px 12px;margin:.5em 0;font-size:.88rem}
+  .gv-chip{display:inline-block;font-size:.74rem;padding:2px 9px;border-radius:999px;margin:2px 3px;color:#0f1419;font-weight:700}
+  .gv-chip.v{background:#4ade80} .gv-chip.w{background:#fbbf24} .gv-chip.c{background:#60a5fa} .gv-chip.n{background:#8b949e}
+  .gv-body .lgl{font-size:.86rem;line-height:1.65;color:var(--txt)} .gv-body .lgl h4{margin:14px 0 4px;font-size:.95rem}
+  .gv-body .lgl a{color:#58a6ff;word-break:break-word}
+  .site-footer{max-width:760px;margin:22px auto 70px;padding:12px 14px;border-top:1px solid var(--line);
+               color:var(--mut);font-size:.8rem;text-align:center;line-height:1.8}
+  .site-footer button{min-height:36px;background:transparent;border:1px solid var(--line);color:var(--txt);
+               border-radius:7px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-family:inherit;margin-inline-start:4px}
+  #backTop{position:fixed;bottom:18px;left:18px;display:none;align-items:center;gap:6px;min-height:44px;padding:10px 14px;
+           background:#4ade80;color:#0f1419;border:none;border-radius:999px;cursor:pointer;font-weight:700;z-index:120;font-family:inherit}
+  #backTop.show{display:inline-flex}
+  .gametime{font-size:.74rem;color:var(--mut)}
+  /* ⭐ i18n toggle for NEW bilingual content (totals/footer/guide/disclaimer) — winner keeps JS-i18n */
+  body[data-applang="en"] .l-he{display:none} body[data-applang="he"] .l-en{display:none}
+  @media (prefers-reduced-motion: no-preference){ html{scroll-behavior:smooth} }
 </style>
 </head>
-<body>
-<nav class="engine-tabs" id="engineTabs" aria-label="Prediction engine / מנוע">
-  <button class="etab active" data-tab="winner" aria-current="page">🏆 <span id="tabWinLbl">Winner</span></button>
-  <button class="etab" data-tab="totals">📊 <span id="tabTotLbl">Totals · טוטאל</span></button>
-</nav>
-<div id="tab-winner">
+<body data-applang="en">
 <header>
   <div>
-    <h1 id="title">MLB A+ Prediction Engine</h1>
-    <div class="sub" id="subtitle">Elo + stage discipline · speaks only on A+ setups (~5% of games)</div>
+    <h1 id="title">MLB Prediction Board</h1>
+    <div class="sub" id="subtitle"></div>
     <button class="howto-hint" id="howtoHint" onclick="openHowto()"></button>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
-    <span class="fresh" id="freshBanner">Last updated: —</span>
-    <button class="toggle" id="langToggle">עב</button>
+    <span class="fresh" id="freshBanner">—</span>
+    <button class="toggle" id="langToggle" aria-label="Language / שפה">עב</button>
   </div>
 </header>
 
-<div class="banner" id="banner"></div>
-<h2 class="secth" id="accHead">Validated accuracy (holdout test)</h2>
+<h2 class="secth" id="accHead">Validated accuracy</h2>
 <div class="kpis" id="kpiStrip"></div>
-<div class="track" id="trackPanel"></div>
 
-<h2 class="secth" id="todayHead">Today's A+ calls</h2>
-<div id="todayCalls" role="status"></div>
-<div id="barNote" class="mbar-note" hidden></div>
+<nav class="chips" id="dateChips" aria-label="date / ניווט תאריך">
+  <button class="chip" data-d="yesterday" aria-pressed="false"><span class="l-he">אתמול</span><span class="l-en">Yesterday</span></button>
+  <button class="chip" data-d="today" aria-pressed="true"><span class="l-he">היום</span><span class="l-en">Today</span></button>
+  <button class="chip" data-d="tomorrow" aria-pressed="false"><span class="l-he">מחר</span><span class="l-en">Tomorrow</span></button>
+</nav>
+<a class="jump" href="#cards"><span class="l-he">↓ קפוץ למשחקי-היום</span><span class="l-en">↓ Jump to today's games</span></a>
 
-<h2 class="secth" id="recentHead">Decided this season</h2>
-<div id="recentCalls" role="status"></div>
+<div id="cards"></div>
 
-<footer>
-  <details id="howto">
-    <summary id="howTitle">How to read this page</summary>
-    <h3 id="howaTitle"></h3><p id="howaText"></p>
-    <h3 id="howbTitle"></h3><p id="howbText"></p>
-    <h3 id="howcTitle" style="color:var(--warn)"></h3><p id="howcText"></p>
-  </details>
+<!-- shared: always-visible disclaimer footer (both tabs) -->
+<footer class="site-footer" id="siteFooter">
+  <span class="l-he">מידע ובידור בלבד · לא ייעוץ-הימורים · גיל 18+</span>
+  <span class="l-en">For information and entertainment only · Not betting advice · 18+</span>
+  <button id="disclaimerBtn" onclick="openDisclaimer()" aria-haspopup="dialog"><span class="l-he">הצהרות ופרטיות</span><span class="l-en">Disclaimer &amp; Privacy</span></button>
 </footer>
-</div><!-- /tab-winner -->
 
-<div id="tab-totals" hidden dir="rtl">
-  <h2 class="t-tier" style="border:0;margin-top:6px">📊 פאנל טוטאל — בייסבול <span class="t-en">Baseball Totals (over/under runs)</span></h2>
-  <p class="t-fresh" id="t_fresh">—</p>
-  <section class="t-engines">
-    <b>שני מנועים, שתי שאלות שונות על אותו משחק:</b><br>
-    🏆 <b>מנצח</b> — מי ינצח? · 📊 <b>טוטאל</b> — כמה ריצות סך-הכל (over/under)?<br>
-    <span class="t-en">A game can be "win 58%" AND "OVER 66%" — two separate, both-true predictions.</span>
-  </section>
-  <button class="t-howto-btn" id="t_howtoBtn" aria-haspopup="dialog">📖 איך לקרוא את הדף? <span class="t-en">How to read</span></button>
-  <nav class="t-chips" id="t_dateChips" aria-label="ניווט תאריך / date">
-    <button class="t-chip" data-d="yesterday" aria-pressed="false">אתמול <span class="t-en">Yesterday</span></button>
-    <button class="t-chip" data-d="today" aria-pressed="true">היום <span class="t-en">Today</span></button>
-    <button class="t-chip" data-d="tomorrow" aria-pressed="false">מחר <span class="t-en">Tomorrow</span></button>
-  </nav>
-  <main id="t_main">
-    <h2 class="t-tier">⭐ קריאות A+ היום <span class="t-en">A+ calls</span></h2>
-    <div id="t_tier1"></div>
-    <h2 class="t-tier">📋 כל המשחקים — מנוע מול שוק <span class="t-en">All games · engine vs market</span></h2>
-    <div id="t_tier2"></div>
-    <h2 class="t-tier">✅ הוכרעו — דיוק over/under <span class="t-en">Decided · over/under accuracy</span></h2>
-    <div id="t_decided"></div>
-    <h2 class="t-tier">📈 CLV מול שוק <span class="t-en">CLV vs market</span></h2>
-    <div id="t_tier3"></div>
-  </main>
+<button id="backTop" aria-label="back to top / חזרה למעלה">↑ <span class="l-he">למעלה</span><span class="l-en">Top</span></button>
+
+<!-- shared guide modal (worldcup pattern) — body set by openGuide(tab) -->
+<div class="gv-modal" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle" onclick="if(event.target===this)closeGuide()">
+  <div class="gv-card">
+    <div class="gv-head"><strong id="guideTitle">📖</strong>
+      <button class="gv-close" onclick="closeGuide()" aria-label="close / סגור">✕</button></div>
+    <div class="gv-body" id="guideBody"></div>
+  </div>
 </div>
-<button id="t_toTop" aria-label="חזרה למעלה / back to top">↑ למעלה</button>
-<dialog id="t_howto" aria-modal="true" aria-labelledby="t_howtoTitle">
-  <div class="dh"><strong id="t_howtoTitle">📖 איך לקרוא את הפאנל</strong>
-    <button class="dc" id="t_howtoClose" aria-label="סגור / close">✕</button></div>
-  <div class="db"><ol>
-    <li><b>שני מנועים, שתי שאלות.</b> מנצח (מי-ינצח) ≠ טוטאל (כמה-ריצות). <span class="t-en">Two engines, two questions.</span></li>
-    <li><b>הברים: מנוע מול שוק.</b> ירוק=מנוע, כחול=שוק (נטול-וויג). הפער הוא העניין. <span class="t-en">Green=engine, blue=market.</span></li>
-    <li><b>A+ — מתי לפעול.</b> פער + cushion 3% + אזור-מכויל + לא-קיצוני. פער-ענק לבדו ≠ A+. <span class="t-en">Huge gap alone ≠ A+.</span></li>
-    <li><b>"צמוד — שתיקה".</b> מעומעם = המנוע מסכים עם השוק; השתיקה חלק מהשיטה. <span class="t-en">Dimmed = agrees with market.</span></li>
-    <li><b>שקול-לשוק = תקין.</b> שוק יעיל; רוב הימים שקול-לשוק = הצלחה. <span class="t-en">Market-efficient is normal.</span></li>
-    <li><b>רעננות.</b> זורק-שהוחלף/קו-שזז מסומנים — אל תפעל על לא-עדכני. <span class="t-en">Stale data is flagged.</span></li>
-  </ol></div>
-</dialog>
+
+<!-- shared disclaimer + privacy modal -->
+<div class="gv-modal" id="disclaimer-modal" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle" onclick="if(event.target===this)closeDisclaimer()">
+  <div class="gv-card">
+    <div class="gv-head"><strong id="disclaimerTitle"><span class="l-he">הצהרות ופרטיות</span><span class="l-en">Disclaimer &amp; Privacy</span></strong>
+      <button class="gv-close" onclick="closeDisclaimer()" aria-label="close / סגור">✕</button></div>
+    <div class="gv-body" id="disclaimerBody"></div>
+  </div>
+</div>
 
 <script>
 // ====== injected by baseball_dashboard.py ======
-const FRESH = {"status": "ok", "updated": "2026-06-17 22:34"}; // FRESH_LINE
-const TODAY = [{"date": "2026-06-17", "away": "SFN", "home": "ATL", "pick": "ATL", "conf": 0.648, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.648, "market_p_home": 0.574}, {"date": "2026-06-17", "away": "COL", "home": "CHN", "pick": "CHN", "conf": 0.616, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.616, "market_p_home": 0.6461}, {"date": "2026-06-17", "away": "CHA", "home": "NYA", "pick": "NYA", "conf": 0.613, "pick_stage": 8, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.613, "market_p_home": 0.5827}, {"date": "2026-06-17", "away": "KCA", "home": "WAS", "pick": "WAS", "conf": 0.601, "pick_stage": 8, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.601, "market_p_home": null}, {"date": "2026-06-17", "away": "DET", "home": "HOU", "pick": "HOU", "conf": 0.595, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.595, "market_p_home": null}, {"date": "2026-06-17", "away": "CLE", "home": "MIL", "pick": "MIL", "conf": 0.595, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.595, "market_p_home": 0.5519}, {"date": "2026-06-17", "away": "ANA", "home": "ARI", "pick": "ARI", "conf": 0.591, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.591, "market_p_home": null}, {"date": "2026-06-17", "away": "TBA", "home": "LAN", "pick": "LAN", "conf": 0.578, "pick_stage": 8, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.578, "market_p_home": null}, {"date": "2026-06-17", "away": "MIA", "home": "PHI", "pick": "PHI", "conf": 0.573, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.573, "market_p_home": null}, {"date": "2026-06-17", "away": "BAL", "home": "SEA", "pick": "SEA", "conf": 0.538, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.538, "market_p_home": 0.5821}, {"date": "2026-06-17", "away": "NYN", "home": "CIN", "pick": "CIN", "conf": 0.533, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.533, "market_p_home": null}, {"date": "2026-06-17", "away": "SDN", "home": "SLN", "pick": "SLN", "conf": 0.531, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.531, "market_p_home": null}, {"date": "2026-06-17", "away": "TOR", "home": "BOS", "pick": "TOR", "conf": 0.516, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.484, "market_p_home": 0.5}, {"date": "2026-06-17", "away": "PIT", "home": "OAK", "pick": "PIT", "conf": 0.506, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.494, "market_p_home": 0.4594}]; // TODAY_LINE
+const FRESH = {"status": "ok", "updated": "2026-06-18 01:15"}; // FRESH_LINE
+const TODAY = [{"date": "2026-06-18", "away": "SFN", "home": "ATL", "pick": "ATL", "conf": 0.648, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.648, "market_p_home": 0.563, "game_datetime": "2026-06-18T23:15:00Z"}, {"date": "2026-06-18", "away": "CHA", "home": "NYA", "pick": "NYA", "conf": 0.613, "pick_stage": 8, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.613, "market_p_home": 0.5831, "game_datetime": "2026-06-18T23:05:00Z"}, {"date": "2026-06-18", "away": "CLE", "home": "MIL", "pick": "MIL", "conf": 0.595, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.595, "market_p_home": 0.5519, "game_datetime": "2026-06-18T18:10:00Z"}, {"date": "2026-06-18", "away": "NYN", "home": "PHI", "pick": "PHI", "conf": 0.595, "pick_stage": 9, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.595, "market_p_home": 0.5344, "game_datetime": "2026-06-18T22:40:00Z"}, {"date": "2026-06-18", "away": "SLN", "home": "KCA", "pick": "SLN", "conf": 0.56, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.44, "market_p_home": 0.5226, "game_datetime": "2026-06-18T23:40:00Z"}, {"date": "2026-06-18", "away": "BAL", "home": "SEA", "pick": "SEA", "conf": 0.538, "pick_stage": 4, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.538, "market_p_home": 0.5822, "game_datetime": "2026-06-18T20:10:00Z"}, {"date": "2026-06-18", "away": "MIN", "home": "TEX", "pick": "TEX", "conf": 0.536, "pick_stage": 3, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.536, "market_p_home": 0.4677, "game_datetime": "2026-06-18T18:35:00Z"}, {"date": "2026-06-18", "away": "ANA", "home": "OAK", "pick": "OAK", "conf": 0.529, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.529, "market_p_home": null, "game_datetime": "2026-06-19T01:40:00Z"}, {"date": "2026-06-18", "away": "TOR", "home": "BOS", "pick": "TOR", "conf": 0.516, "pick_stage": 5, "result": "", "correct": "", "verdict": "שתיקה", "p_home": 0.484, "market_p_home": 0.5064, "game_datetime": "2026-06-18T17:35:00Z"}]; // TODAY_LINE
 const RECENT = []; // RECENT_LINE
 const TRACK = {"decided": 0, "correct": 0, "pending": 0}; // TRACK_LINE
 const ACCURACY = {"aplus": 70.2, "aplus_pct": 5.4, "stage": 60.9, "overall": 58.1, "base": 53.3, "games": 10616}; // ACCURACY_LINE
-const TODAY_DATE = "2026-06-17"; // DATE_LINE
-const SCANNED = 15; // SCANNED_LINE
-const TOTALS = {"date": "2026-06-17", "updated": "2026-06-17 22:34", "has_market": false, "games": [{"date": "2026-06-17", "game_pk": 824503, "home": "CIN", "away": "NYN", "home_pitcher": "Nick Lodolo", "away_pitcher": "Nolan McLean", "home_pitcher_id": 666157, "away_pitcher_id": 690997, "lambda_total": 9.613, "primary_line": 8.5, "p_over": 0.5423, "p_under": 0.4577, "p_over_by_line": {"7.5": 0.6226, "8.5": 0.5423, "9.5": 0.4389, "10.5": 0.3722}, "market_p_over": null, "gap": null, "park_factor": 1.06, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": ["מגרש מעלה-ריצות (×1.06)", "פותחים: Nolan McLean @ Nick Lodolo (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 822721, "home": "WAS", "away": "KCA", "home_pitcher": "Zack Littell", "away_pitcher": "Luinder Avila", "home_pitcher_id": 641793, "away_pitcher_id": 679883, "lambda_total": 9.731, "primary_line": 8.5, "p_over": 0.551, "p_under": 0.449, "p_over_by_line": {"7.5": 0.6312, "8.5": 0.551, "9.5": 0.448, "10.5": 0.3814}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Luinder Avila @ Zack Littell (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 823450, "home": "PHI", "away": "MIA", "home_pitcher": "Andrew Painter", "away_pitcher": "Sandy Alcantara", "home_pitcher_id": 691725, "away_pitcher_id": 645261, "lambda_total": 8.701, "primary_line": 8.5, "p_over": 0.4703, "p_under": 0.5297, "p_over_by_line": {"7.5": 0.5497, "8.5": 0.4703, "9.5": 0.366, "10.5": 0.2996}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Sandy Alcantara @ Andrew Painter (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 824912, "home": "ATL", "away": "SFN", "home_pitcher": "Grant Holmes", "away_pitcher": "Adrian Houser", "home_pitcher_id": 656550, "away_pitcher_id": 605288, "lambda_total": 9.293, "primary_line": 8.5, "p_over": 0.5179, "p_under": 0.4821, "p_over_by_line": {"7.5": 0.5982, "8.5": 0.5179, "9.5": 0.4138, "10.5": 0.3469}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Adrian Houser @ Grant Holmes (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 824178, "home": "HOU", "away": "DET", "home_pitcher": "Peter Lambert", "away_pitcher": "Casey Mize", "home_pitcher_id": 663567, "away_pitcher_id": 663554, "lambda_total": 8.877, "primary_line": 8.5, "p_over": 0.4848, "p_under": 0.5152, "p_over_by_line": {"7.5": 0.5647, "8.5": 0.4848, "9.5": 0.3804, "10.5": 0.3137}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Casey Mize @ Peter Lambert (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 823044, "home": "SLN", "away": "SDN", "home_pitcher": "Kyle Leahy", "away_pitcher": "Bradgley Rodriguez", "home_pitcher_id": 681517, "away_pitcher_id": 699134, "lambda_total": 8.828, "primary_line": 8.5, "p_over": 0.4808, "p_under": 0.5192, "p_over_by_line": {"7.5": 0.5605, "8.5": 0.4808, "9.5": 0.3764, "10.5": 0.3097}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Bradgley Rodriguez @ Kyle Leahy (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 823940, "home": "LAN", "away": "TBA", "home_pitcher": "Shohei Ohtani", "away_pitcher": "Shane McClanahan", "home_pitcher_id": 660271, "away_pitcher_id": 663556, "lambda_total": 8.55, "primary_line": 8.5, "p_over": 0.4576, "p_under": 0.5424, "p_over_by_line": {"7.5": 0.5367, "8.5": 0.4576, "9.5": 0.3536, "10.5": 0.2874}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Shane McClanahan @ Shohei Ohtani (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 825072, "home": "ARI", "away": "ANA", "home_pitcher": "Eduardo Rodriguez", "away_pitcher": "Sam Aldegheri", "home_pitcher_id": 593958, "away_pitcher_id": 691951, "lambda_total": 9.717, "primary_line": 8.5, "p_over": 0.55, "p_under": 0.45, "p_over_by_line": {"7.5": 0.6302, "8.5": 0.55, "9.5": 0.447, "10.5": 0.3803}, "market_p_over": null, "gap": null, "park_factor": 1.06, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": ["מגרש מעלה-ריצות (×1.06)", "פותחים: Sam Aldegheri @ Eduardo Rodriguez (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 824746, "home": "BOS", "away": "TOR", "home_pitcher": "Jake Bennett", "away_pitcher": "Braydon Fisher", "home_pitcher_id": 687562, "away_pitcher_id": 680755, "lambda_total": 9.914, "primary_line": 8.5, "p_over": 0.5644, "p_under": 0.4356, "p_over_by_line": {"7.5": 0.6443, "8.5": 0.5644, "9.5": 0.462, "10.5": 0.3957}, "market_p_over": null, "gap": null, "park_factor": 1.08, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": ["מגרש מעלה-ריצות (×1.08)", "פותחים: Braydon Fisher @ Jake Bennett (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 823536, "home": "NYA", "away": "CHA", "home_pitcher": "Carlos Rodón", "away_pitcher": "Anthony Kay", "home_pitcher_id": 607074, "away_pitcher_id": 641743, "lambda_total": 9.006, "primary_line": 8.5, "p_over": 0.4953, "p_under": 0.5047, "p_over_by_line": {"7.5": 0.5753, "8.5": 0.4953, "9.5": 0.3909, "10.5": 0.324}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Anthony Kay @ Carlos Rodón (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 824913, "home": "ATL", "away": "SFN", "home_pitcher": "JR Ritchie", "away_pitcher": "Carson Whisenhunt", "home_pitcher_id": 702275, "away_pitcher_id": 687931, "lambda_total": 9.293, "primary_line": 8.5, "p_over": 0.5179, "p_under": 0.4821, "p_over_by_line": {"7.5": 0.5982, "8.5": 0.5179, "9.5": 0.4138, "10.5": 0.3469}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Carson Whisenhunt @ JR Ritchie (תצוגה-בלבד)"]}, {"date": "2026-06-17", "game_pk": 823774, "home": "MIL", "away": "CLE", "home_pitcher": "Brandon Sproat", "away_pitcher": "Gavin Williams", "home_pitcher_id": 687075, "away_pitcher_id": 668909, "lambda_total": 8.256, "primary_line": 8.5, "p_over": 0.4325, "p_under": 0.5675, "p_over_by_line": {"7.5": 0.5105, "8.5": 0.4325, "9.5": 0.3292, "10.5": 0.264}, "market_p_over": null, "gap": null, "park_factor": 0.94, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": ["מגרש מדכא-ריצות (×0.94)", "פותחים: Gavin Williams @ Brandon Sproat (תצוגה-בלבד)"]}, {"date": "2026-06-18", "game_pk": 824668, "home": "CHN", "away": "COL", "home_pitcher": "Javier Assad", "away_pitcher": "Sean Sullivan", "home_pitcher_id": 665871, "away_pitcher_id": 807743, "lambda_total": 8.903, "primary_line": 8.5, "p_over": 0.4869, "p_under": 0.5131, "p_over_by_line": {"7.5": 0.5668, "8.5": 0.4869, "9.5": 0.3825, "10.5": 0.3157}, "market_p_over": null, "gap": null, "park_factor": 0.94, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": ["מגרש מדכא-ריצות (×0.94)", "פותחים: Sean Sullivan @ Javier Assad (תצוגה-בלבד)"]}, {"date": "2026-06-18", "game_pk": 824992, "home": "OAK", "away": "PIT", "home_pitcher": "Aaron Civale", "away_pitcher": "Braxton Ashcraft", "home_pitcher_id": 650644, "away_pitcher_id": 677952, "lambda_total": 9.26, "primary_line": 8.5, "p_over": 0.5154, "p_under": 0.4846, "p_over_by_line": {"7.5": 0.5956, "8.5": 0.5154, "9.5": 0.4112, "10.5": 0.3443}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": ["⚠️ park factor לא-ודאי", "פותחים: Braxton Ashcraft @ Aaron Civale (תצוגה-בלבד)"]}, {"date": "2026-06-18", "game_pk": 823127, "home": "SEA", "away": "BAL", "home_pitcher": "George Kirby", "away_pitcher": "Kyle Bradish", "home_pitcher_id": 669923, "away_pitcher_id": 680694, "lambda_total": 8.269, "primary_line": 8.5, "p_over": 0.4336, "p_under": 0.5664, "p_over_by_line": {"7.5": 0.5116, "8.5": 0.4336, "9.5": 0.3303, "10.5": 0.265}, "market_p_over": null, "gap": null, "park_factor": 0.83, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": ["מגרש מדכא-ריצות (×0.83)", "פותחים: Kyle Bradish @ George Kirby (תצוגה-בלבד)"]}]}; // TOTALS_LINE
-const TLOG = {"decided": 7, "by_verdict": {"no_market": 7}, "from": "2026-06-17", "ou_correct": 4, "ou_total": 7, "push": 0}; // TLOG_LINE
-const TDECIDED = [{"date": "2026-06-17", "away": "NYN", "home": "CIN", "line": "8.5", "total_actual": "10", "engine_p_over": "0.5423", "engine_correct": "1", "verdict": "no_market"}, {"date": "2026-06-17", "away": "KCA", "home": "WAS", "line": "8.5", "total_actual": "8", "engine_p_over": "0.551", "engine_correct": "0", "verdict": "no_market"}, {"date": "2026-06-17", "away": "MIA", "home": "PHI", "line": "8.5", "total_actual": "16", "engine_p_over": "0.4703", "engine_correct": "0", "verdict": "no_market"}, {"date": "2026-06-17", "away": "DET", "home": "HOU", "line": "8.5", "total_actual": "6", "engine_p_over": "0.4848", "engine_correct": "1", "verdict": "no_market"}, {"date": "2026-06-17", "away": "SDN", "home": "SLN", "line": "8.5", "total_actual": "7", "engine_p_over": "0.4808", "engine_correct": "1", "verdict": "no_market"}, {"date": "2026-06-17", "away": "TBA", "home": "LAN", "line": "8.5", "total_actual": "9", "engine_p_over": "0.4576", "engine_correct": "0", "verdict": "no_market"}, {"date": "2026-06-17", "away": "ANA", "home": "ARI", "line": "8.5", "total_actual": "9", "engine_p_over": "0.55", "engine_correct": "1", "verdict": "no_market"}]; // TDECIDED_LINE
+const TODAY_DATE = "2026-06-18"; // DATE_LINE
+const SCANNED = 9; // SCANNED_LINE
+const TOTALS = {"date": "2026-06-18", "updated": "2026-06-18 01:14", "has_market": false, "games": [{"date": "2026-06-18", "game_pk": 824748, "game_datetime": "2026-06-18T17:35:00Z", "home": "BOS", "away": "TOR", "home_pitcher": "Sonny Gray", "away_pitcher": "Trey Yesavage", "home_pitcher_id": 543243, "away_pitcher_id": 702056, "lambda_total": 9.914, "primary_line": 8.5, "p_over": 0.5644, "p_under": 0.4356, "p_over_by_line": {"7.5": 0.6443, "8.5": 0.5644, "9.5": 0.462, "10.5": 0.3957}, "market_p_over": null, "gap": null, "park_factor": 1.08, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_up", "pf": 1.08}, {"code": "pitchers", "away": "Trey Yesavage", "home": "Sonny Gray"}]}, {"date": "2026-06-18", "game_pk": 823772, "game_datetime": "2026-06-18T18:10:00Z", "home": "MIL", "away": "CLE", "home_pitcher": "Shane Drohan", "away_pitcher": "Parker Messick", "home_pitcher_id": 675660, "away_pitcher_id": 800048, "lambda_total": 8.256, "primary_line": 8.5, "p_over": 0.4325, "p_under": 0.5675, "p_over_by_line": {"7.5": 0.5105, "8.5": 0.4325, "9.5": 0.3292, "10.5": 0.264}, "market_p_over": null, "gap": null, "park_factor": 0.94, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_down", "pf": 0.94}, {"code": "pitchers", "away": "Parker Messick", "home": "Shane Drohan"}]}, {"date": "2026-06-18", "game_pk": 822889, "game_datetime": "2026-06-18T18:35:00Z", "home": "TEX", "away": "MIN", "home_pitcher": "Jack Leiter", "away_pitcher": "Joe Ryan", "home_pitcher_id": 683004, "away_pitcher_id": 657746, "lambda_total": 9.239, "primary_line": 8.5, "p_over": 0.5137, "p_under": 0.4863, "p_over_by_line": {"7.5": 0.594, "8.5": 0.5137, "9.5": 0.4095, "10.5": 0.3426}, "market_p_over": null, "gap": null, "park_factor": 0.94, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_down", "pf": 0.94}, {"code": "pitchers", "away": "Joe Ryan", "home": "Jack Leiter"}]}, {"date": "2026-06-18", "game_pk": 823125, "game_datetime": "2026-06-18T20:10:00Z", "home": "SEA", "away": "BAL", "home_pitcher": "Bryan Woo", "away_pitcher": "Shane Baz", "home_pitcher_id": 693433, "away_pitcher_id": 669358, "lambda_total": 8.269, "primary_line": 8.5, "p_over": 0.4336, "p_under": 0.5664, "p_over_by_line": {"7.5": 0.5116, "8.5": 0.4336, "9.5": 0.3303, "10.5": 0.265}, "market_p_over": null, "gap": null, "park_factor": 0.83, "park_uncertain": false, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_down", "pf": 0.83}, {"code": "pitchers", "away": "Shane Baz", "home": "Bryan Woo"}]}, {"date": "2026-06-18", "game_pk": 823448, "game_datetime": "2026-06-18T22:40:00Z", "home": "PHI", "away": "NYN", "home_pitcher": "Aaron Nola", "away_pitcher": "Sean Manaea", "home_pitcher_id": 605400, "away_pitcher_id": 640455, "lambda_total": 9.07, "primary_line": 8.5, "p_over": 0.5004, "p_under": 0.4996, "p_over_by_line": {"7.5": 0.5805, "8.5": 0.5004, "9.5": 0.396, "10.5": 0.3291}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Sean Manaea", "home": "Aaron Nola"}]}, {"date": "2026-06-18", "game_pk": 823533, "game_datetime": "2026-06-18T23:05:00Z", "home": "NYA", "away": "CHA", "home_pitcher": "Ryan Weathers", "away_pitcher": "Sean Burke", "home_pitcher_id": 677960, "away_pitcher_id": 680732, "lambda_total": 9.006, "primary_line": 8.5, "p_over": 0.4953, "p_under": 0.5047, "p_over_by_line": {"7.5": 0.5753, "8.5": 0.4953, "9.5": 0.3909, "10.5": 0.324}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Sean Burke", "home": "Ryan Weathers"}]}, {"date": "2026-06-18", "game_pk": 824911, "game_datetime": "2026-06-18T23:15:00Z", "home": "ATL", "away": "SFN", "home_pitcher": "Martín Pérez", "away_pitcher": "Landen Roupp", "home_pitcher_id": 527048, "away_pitcher_id": 694738, "lambda_total": 9.293, "primary_line": 8.5, "p_over": 0.5179, "p_under": 0.4821, "p_over_by_line": {"7.5": 0.5982, "8.5": 0.5179, "9.5": 0.4138, "10.5": 0.3469}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Landen Roupp", "home": "Martín Pérez"}]}, {"date": "2026-06-18", "game_pk": 824098, "game_datetime": "2026-06-18T23:40:00Z", "home": "KCA", "away": "SLN", "home_pitcher": "Noah Cameron", "away_pitcher": "Matthew Liberatore", "home_pitcher_id": 702070, "away_pitcher_id": 669461, "lambda_total": 9.142, "primary_line": 8.5, "p_over": 0.5061, "p_under": 0.4939, "p_over_by_line": {"7.5": 0.5863, "8.5": 0.5061, "9.5": 0.4018, "10.5": 0.3349}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Matthew Liberatore", "home": "Noah Cameron"}]}, {"date": "2026-06-19", "game_pk": 824989, "game_datetime": "2026-06-19T01:40:00Z", "home": "OAK", "away": "ANA", "home_pitcher": "Gage Jump", "away_pitcher": "", "home_pitcher_id": 695611, "away_pitcher_id": "", "lambda_total": 9.302, "primary_line": 8.5, "p_over": 0.5186, "p_under": 0.4814, "p_over_by_line": {"7.5": 0.5989, "8.5": 0.5186, "9.5": 0.4145, "10.5": 0.3476}, "market_p_over": null, "gap": null, "park_factor": 1.0, "park_uncertain": true, "pitcher_changed": false, "verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "?", "home": "Gage Jump"}]}]}; // TOTALS_LINE
+const TLOG = {"decided": 0, "by_verdict": {}, "from": null, "ou_correct": 0, "ou_total": 0, "push": 0}; // TLOG_LINE
+const TDECIDED = []; // TDECIDED_LINE
+const GAMES = [{"date": "2026-06-18", "home": "BOS", "away": "TOR", "game_datetime": "2026-06-18T17:35:00Z", "has_winner": true, "pick": "TOR", "conf": 0.516, "p_home": 0.484, "market_p_home": 0.5064, "pick_stage": 5, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.5644, "p_under": 0.4356, "market_p_over": null, "lambda_total": 9.914, "park_factor": 1.08, "park_uncertain": false, "tot_verdict": "no_market", "reasons": [{"code": "park_up", "pf": 1.08}, {"code": "pitchers", "away": "Trey Yesavage", "home": "Sonny Gray"}], "home_pitcher": "Sonny Gray", "away_pitcher": "Trey Yesavage", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "MIL", "away": "CLE", "game_datetime": "2026-06-18T18:10:00Z", "has_winner": true, "pick": "MIL", "conf": 0.595, "p_home": 0.595, "market_p_home": 0.5519, "pick_stage": 9, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.4325, "p_under": 0.5675, "market_p_over": null, "lambda_total": 8.256, "park_factor": 0.94, "park_uncertain": false, "tot_verdict": "no_market", "reasons": [{"code": "park_down", "pf": 0.94}, {"code": "pitchers", "away": "Parker Messick", "home": "Shane Drohan"}], "home_pitcher": "Shane Drohan", "away_pitcher": "Parker Messick", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "TEX", "away": "MIN", "game_datetime": "2026-06-18T18:35:00Z", "has_winner": true, "pick": "TEX", "conf": 0.536, "p_home": 0.536, "market_p_home": 0.4677, "pick_stage": 3, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.5137, "p_under": 0.4863, "market_p_over": null, "lambda_total": 9.239, "park_factor": 0.94, "park_uncertain": false, "tot_verdict": "no_market", "reasons": [{"code": "park_down", "pf": 0.94}, {"code": "pitchers", "away": "Joe Ryan", "home": "Jack Leiter"}], "home_pitcher": "Jack Leiter", "away_pitcher": "Joe Ryan", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "SEA", "away": "BAL", "game_datetime": "2026-06-18T20:10:00Z", "has_winner": true, "pick": "SEA", "conf": 0.538, "p_home": 0.538, "market_p_home": 0.5822, "pick_stage": 4, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.4336, "p_under": 0.5664, "market_p_over": null, "lambda_total": 8.269, "park_factor": 0.83, "park_uncertain": false, "tot_verdict": "no_market", "reasons": [{"code": "park_down", "pf": 0.83}, {"code": "pitchers", "away": "Shane Baz", "home": "Bryan Woo"}], "home_pitcher": "Bryan Woo", "away_pitcher": "Shane Baz", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "PHI", "away": "NYN", "game_datetime": "2026-06-18T22:40:00Z", "has_winner": true, "pick": "PHI", "conf": 0.595, "p_home": 0.595, "market_p_home": 0.5344, "pick_stage": 9, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.5004, "p_under": 0.4996, "market_p_over": null, "lambda_total": 9.07, "park_factor": 1.0, "park_uncertain": true, "tot_verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Sean Manaea", "home": "Aaron Nola"}], "home_pitcher": "Aaron Nola", "away_pitcher": "Sean Manaea", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "NYA", "away": "CHA", "game_datetime": "2026-06-18T23:05:00Z", "has_winner": true, "pick": "NYA", "conf": 0.613, "p_home": 0.613, "market_p_home": 0.5831, "pick_stage": 8, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.4953, "p_under": 0.5047, "market_p_over": null, "lambda_total": 9.006, "park_factor": 1.0, "park_uncertain": true, "tot_verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Sean Burke", "home": "Ryan Weathers"}], "home_pitcher": "Ryan Weathers", "away_pitcher": "Sean Burke", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "ATL", "away": "SFN", "game_datetime": "2026-06-18T23:15:00Z", "has_winner": true, "pick": "ATL", "conf": 0.648, "p_home": 0.648, "market_p_home": 0.563, "pick_stage": 4, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.5179, "p_under": 0.4821, "market_p_over": null, "lambda_total": 9.293, "park_factor": 1.0, "park_uncertain": true, "tot_verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Landen Roupp", "home": "Martín Pérez"}], "home_pitcher": "Martín Pérez", "away_pitcher": "Landen Roupp", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "KCA", "away": "SLN", "game_datetime": "2026-06-18T23:40:00Z", "has_winner": true, "pick": "SLN", "conf": 0.56, "p_home": 0.44, "market_p_home": 0.5226, "pick_stage": 5, "win_verdict": "שתיקה", "has_totals": true, "line": 8.5, "p_over": 0.5061, "p_under": 0.4939, "market_p_over": null, "lambda_total": 9.142, "park_factor": 1.0, "park_uncertain": true, "tot_verdict": "no_market", "reasons": [{"code": "park_uncertain"}, {"code": "pitchers", "away": "Matthew Liberatore", "home": "Noah Cameron"}], "home_pitcher": "Noah Cameron", "away_pitcher": "Matthew Liberatore", "pitcher_changed": false, "played": false}, {"date": "2026-06-18", "home": "OAK", "away": "ANA", "game_datetime": "2026-06-19T01:40:00Z", "has_winner": true, "pick": "OAK", "conf": 0.529, "p_home": 0.529, "market_p_home": null, "pick_stage": 5, "win_verdict": "שתיקה", "has_totals": false, "played": false}]; // GAMES_LINE
 // ================================================
 
 const I18N = {
@@ -276,46 +306,82 @@ function quietText(L){
   return L.quiet;
 }
 
-function callCard(c, L, showDate){
-  let resultHtml = "";
-  if(c.result){
-    const cls = c.correct==="1" ? "ok" : "miss";
-    const label = c.correct==="1" ? L.correct : L.wrong;
-    // הפרש מחושב בתצוגה בלבד מתוך result בפורמט "winner (A-H)"; fail-safe אם אין 2 מספרים
-    const m = String(c.result).match(/\((\d+)\s*-\s*(\d+)\)/);
-    const marginTxt = m ? ` · ${L.marginLbl} ${Math.abs(+m[1]-+m[2])}` : "";
-    resultHtml = `<div class="result"><span class="${cls}">${L.result}${c.result}${marginTxt} ${label}</span></div>`;
+let view = "today";
+const TT = (he,en)=> lang==="he" ? he : en;
+
+// תרגום שורות-הסבר מקודים-מובנים (predict_totals._reasons) → he/en. תאימות-אחורה: מחרוזת → כפי-שהיא.
+function reasonText(r){
+  if(typeof r==="string") return r;
+  switch(r && r.code){
+    case "park_up":        return TT(`מגרש מעלה-ריצות (×${r.pf})`,`Park raises runs (×${r.pf})`);
+    case "park_down":      return TT(`מגרש מדכא-ריצות (×${r.pf})`,`Park suppresses runs (×${r.pf})`);
+    case "park_uncertain": return TT("⚠️ park factor לא-ודאי","⚠️ park factor uncertain");
+    case "pitchers":       return TT(`פותחים: ${r.away} @ ${r.home} (תצוגה-בלבד)`,`Starters: ${r.away} @ ${r.home} (display only)`);
+    default:               return "";
   }
-  const dateRow = showDate ? `<div class="cdate">${fmtDate(c.date)}</div>` : "";
-  const silent = (c.verdict === "שתיקה");   // רק שתיקות-היום מעומעמות; RECENT (verdict "call") נשאר בולט
-  const silentTag = silent ? ` · <span class="silent-tag">${L.silentTag}</span>` : "";
-  // בר engine-מול-market (additive; שניהם = P(הבית מנצח), טקסט-כהה). graceful: בלי p_home → אין בר.
-  let barsHtml = "";
-  if(c.p_home != null){
-    const ph = Math.round(c.p_home*100);
-    const engRow = `<div class="mbar-row"><span class="mbar-lbl">${L.engineBar}</span>
-      <div class="mbar-track"><div class="mbar-fill eng" style="width:${Math.max(8,ph)}%">${ph}%</div></div></div>`;
-    let mktRow = "", edge = "";
-    if(c.market_p_home != null){
-      const mp = Math.round(c.market_p_home*100);
-      mktRow = `<div class="mbar-row"><span class="mbar-lbl">${L.marketBar}</span>
-        <div class="mbar-track"><div class="mbar-fill mkt" style="width:${Math.max(8,mp)}%">${mp}%</div></div></div>`;
-      const d = ph - mp;
-      edge = ` · ${L.edgeLbl} ${d>0?"+":""}${d}%`;
-    }
-    barsHtml = `<div class="mbar">${engRow}${mktRow}
-      <div class="mbar-edge">${L.homeWinLbl}: ${c.home}${edge}</div></div>`;
+}
+// בר אחיד (טקסט-כהה). reuse של מחלקות .mbar.
+// בר 2-פלחים (כמו המונדיאל): צד-שמאל ∝ p, צד-ימין ∝ 1-p. טקסט-כהה על הפלחים.
+function segBar(label,lCls,p,lLbl,rCls,rLbl){
+  const l=Math.round(p*100), r=100-l;
+  return `<div class="segrow"><span class="seglbl">${label}</span>
+    <div class="seg2"><div class="seg ${lCls}" style="flex:${l}">${l>16?lLbl+" "+l+"%":""}</div>`+
+    `<div class="seg ${rCls}" style="flex:${r}">${r>16?rLbl+" "+r+"%":""}</div></div></div>`;}
+
+function isAplus(g){ return g.win_verdict==="A+ קריאה" || (g.has_totals && g.tot_verdict==="aplus"); }
+
+// ⭐ קובייה-מאוחדת אחת-למשחק: מנצח למעלה + אקורדיון-טוטאל (סגור) + תוצאה+✓/✗ באותה קובייה
+function cubeHTML(g){
+  const dt = fmtGameDateTime(g.game_datetime, g.date);
+  // flags
+  let flags="";
+  if(g.win_verdict==="A+ קריאה") flags+=`<span class="cflag ap">⚾ A+</span>`;
+  if(g.has_totals && g.tot_verdict==="aplus") flags+=`<span class="cflag ap">📊 A+</span>`;
+  if(g.pitcher_changed) flags+=`<span class="cflag warn">${TT("זורק הוחלף","pitcher changed")}</span>`;
+  // 🏆 winner (top): engine vs market, 2 צדדים (P(בית)), אין תיקו
+  let win="";
+  if(g.has_winner && g.p_home!=null){
+    const ph=Math.round(g.p_home*100);
+    win+=segBar(TT("מנוע","Engine"),"h",g.p_home,TT("בית","H"),"a",TT("חוץ","A"));    // "מה שווה"
+    let edge="";
+    if(g.market_p_home!=null){ win+=segBar(TT("שוק","Market"),"h",g.market_p_home,TT("בית","H"),"a",TT("חוץ","A"));  // "מה עולה"
+      const d=ph-Math.round(g.market_p_home*100); edge=` · ${TT("פער","gap")} ${d>0?"+":""}${d}%`; }
+    win+=`<div class="axis2"><span style="flex:${ph}">${g.home}</span><span style="flex:${100-ph}">${g.away}</span></div>`;
+    const conf=Math.round((parseFloat(g.conf)||0)*100);
+    const silent = g.win_verdict!=="A+ קריאה";
+    win+=`<div class="pickline2">🏆 ${TT("קריאה","Call")}: <b>${g.pick}</b> · ${conf}%${edge} · ${TT("שלב","stage")} ${g.pick_stage}`+
+         (silent?` · <span class="silent-tag">${TT("צמוד — שתיקה","too close — silent")}</span>`:"")+`</div>`;
   }
-  return `<div class="call${silent ? " silent" : ""}">
-    ${dateRow}
-    <div class="ctop">
-      <span class="teams">${c.away} @ ${c.home}</span>
-      <span class="pick">${c.pick} ${pct(c.conf)}</span>
-    </div>
-    <div class="meta">${L.conf}: ${pct(c.conf)} · ${L.stage} ${c.pick_stage}${silentTag}</div>
-    ${barsHtml}
-    ${resultHtml}
-  </div>`;
+  // 📊 totals accordion (closed by default)
+  let tot="";
+  if(g.has_totals && g.p_over!=null){
+    const line=g.line; let tb=segBar(TT("מנוע","Engine"),"o",g.p_over,"OVER","u","UNDER");
+    if(g.market_p_over!=null) tb+=segBar(TT("שוק","Market"),"o",g.market_p_over,"OVER","u","UNDER");
+    tb+=`<div class="axis2"><span style="flex:${Math.round(g.p_over*100)}">OVER ${line}</span><span style="flex:${100-Math.round(g.p_over*100)}">UNDER</span></div>`;
+    const rs=(g.reasons||[]).map(r=>{const t=reasonText(r);return t?`<div>• ${t}</div>`:"";}).join("");
+    const tap=g.tot_verdict==="aplus"?` <span class="cflag ap">A+</span>`:"";
+    tot=`<details class="acc"><summary>📊 ${TT("טוטאל ריצות","Total runs")} · ${TT("קו","line")} ${line}${tap}</summary>
+      <div class="acc-body"><div class="tsub">λ = ${g.lambda_total} ${TT("ריצות","runs")} · park ×${g.park_factor}${g.park_uncertain?" ⚠️":""}</div>
+      ${tb}<div class="treasons">${rs}</div></div></details>`;
+  }
+  // result tail (same cube)
+  let tail="";
+  if(g.played){
+    let parts=[];
+    if(g.win_correct==="1") parts.push(`🏆 <span class="ok">✓ ${TT("מנצח","winner")}</span>`);
+    else if(g.win_correct==="0") parts.push(`🏆 <span class="miss">✗ ${TT("מנצח","winner")}</span>`);
+    if(g.tot_correct==="1") parts.push(`📊 <span class="ok">✓ ${TT("טוטאל","total")}</span>`);
+    else if(g.tot_correct==="0") parts.push(`📊 <span class="miss">✗ ${TT("טוטאל","total")}</span>`);
+    else if(g.tot_correct==="push") parts.push(`📊 <span class="t-push">push</span>`);
+    tail=`<div class="restail">${TT("תוצאה","Final")}: ${g.away} ${g.away_score}–${g.home_score} ${g.home}`+
+         (g.total_actual!=null?` (${TT("סך","total")} ${g.total_actual})`:"")+(parts.length?` · ${parts.join(" · ")}`:"")+`</div>`;
+  } else {
+    tail=`<div class="restail pend">${TT("טרם שוחק","Not played yet")}</div>`;
+  }
+  return `<div class="cube${isAplus(g)?" ap":""}">
+    <div class="cube-head"><div><div class="teams">${g.away} @ ${g.home}</div>
+      <div class="cdate">${dt||""}</div></div><div class="cflags">${flags}</div></div>
+    ${win}${tot}${tail}</div>`;
 }
 
 function render(){
@@ -323,186 +389,156 @@ function render(){
   document.documentElement.lang = lang;
   document.documentElement.dir = (lang==="he") ? "rtl" : "ltr";
   document.getElementById("title").textContent = L.title;
-  document.getElementById("subtitle").textContent = L.subtitle;
+  document.getElementById("subtitle").textContent = TT("שני מנועים, קובייה אחת לכל משחק: מנצח + טוטאל-ריצות (over/under).","Two engines, one card per game: winner + total runs (over/under).");
   document.getElementById("langToggle").textContent = (lang==="en") ? "עב" : "EN";
-  document.getElementById("todayHead").textContent = L.todayHead;
-  document.getElementById("recentHead").textContent = L.recentHead;
-  document.getElementById("howTitle").textContent = L.howTitle;
-  document.getElementById("howaTitle").textContent = L.howaTitle;
-  document.getElementById("howaText").textContent = L.howaText;
-  document.getElementById("howbTitle").textContent = L.howbTitle;
-  document.getElementById("howbText").textContent = L.howbText;
-  document.getElementById("howcTitle").textContent = L.howcTitle;
-  document.getElementById("howcText").textContent = L.howcText;
   document.getElementById("howtoHint").textContent = L.howtoHint;
 
   const fb = document.getElementById("freshBanner");
   if(FRESH.status==="stale"){ fb.className="fresh stale"; fb.textContent = L.stale + FRESH.updated; }
   else { fb.className="fresh"; fb.textContent = L.fresh + FRESH.updated; }
 
-  document.getElementById("banner").textContent =
-    TODAY_DATE ? `${fmtDate(TODAY_DATE)}` : "";
-  if(TODAY.length) document.getElementById("banner").style.display="none";
-  else document.getElementById("banner").style.display="block";
-
-  const tp = document.getElementById("trackPanel");
-  if(TRACK.decided>0){
-    const acc = Math.round(TRACK.correct/TRACK.decided*100);
-    tp.innerHTML = `<div>${L.trackTitle}</div><div class="big">${acc}%</div>
-      <div class="n">${TRACK.correct}${L.of}${TRACK.decided} · ${TRACK.pending}${L.pending}</div>`;
-  } else {
-    tp.innerHTML = `<div>${L.trackTitle}</div><div class="n">${L.noTrack}</div>`;
-  }
-
-  // קוביות-דיוק מאומת (holdout). הרף הוא 70% — בייסבול אקראי יותר, לא 85% של NBA.
-  // רק 4 מדדים שבאמת חושבו: A+ · שלב-גבוה · כללי-מול-בסיס · גודל-מדגם. אין קריאות-חוץ/עייפות (אין לבייסבול).
+  // KPI: 4 קוביות — A+ מנצח · שלב · כללי · דיוק-טוטאל O/U (מ-TLOG)
   const A = ACCURACY;
   document.getElementById("accHead").textContent = L.accHead;
-  const kp = document.getElementById("kpiStrip");
-  if(A.games>0){
-    const g = A.games.toLocaleString();
-    const cubes = [
-      {n:A.aplus,  u:"%", l:L.kAplus.replace("{v}",A.aplus).replace("{pct}",A.aplus_pct)},
-      {n:A.stage,  u:"%", l:L.kStage.replace("{v}",A.stage)},
-      {n:A.overall,u:"%", l:L.kOverall.replace("{v}",A.overall).replace("{base}",A.base)},
-      {n:g,        u:"",  l:L.kGames.replace("{v}",g)},
-    ];
-    kp.innerHTML = cubes.map(c=>`<div class="kpi"><div class="n">${c.n}<small>${c.u}</small></div><div class="l">${c.l}</div></div>`).join("");
-    document.getElementById("accHead").style.display="";
-  } else { kp.innerHTML=""; document.getElementById("accHead").style.display="none"; }
+  const ou = (typeof TLOG!=="undefined" && TLOG.ou_total) ? Math.round(TLOG.ou_correct/TLOG.ou_total*100)+"%" : "—";
+  const ouSub = TT("דיוק over/under של מנוע-הטוטאל (כיוון גולמי; ~50% תקין בשוק יעיל)","Totals engine over/under direction (raw; ~50% healthy)")
+    + (typeof TLOG!=="undefined" && TLOG.ou_total ? ` · ${TLOG.ou_correct}/${TLOG.ou_total}` : "");
+  const cubes = [
+    {n:A.aplus,  u:"%", l:L.kAplus.replace("{v}",A.aplus).replace("{pct}",A.aplus_pct)},
+    {n:A.stage,  u:"%", l:L.kStage.replace("{v}",A.stage)},
+    {n:A.overall,u:"%", l:L.kOverall.replace("{v}",A.overall).replace("{base}",A.base)},
+    {n:ou,       u:"",  l:ouSub},
+  ];
+  document.getElementById("kpiStrip").innerHTML =
+    cubes.map(c=>`<div class="kpi"><div class="n">${c.n}<small>${c.u}</small></div><div class="l">${c.l}</div></div>`).join("");
 
-  const tc = document.getElementById("todayCalls");
-  tc.innerHTML = TODAY.length ? TODAY.map(c=>callCard(c,L)).join("") : `<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--mut)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>${quietText(L)}</div>`;
+  // date chips
+  document.querySelectorAll("#dateChips .chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.d===view));
 
-  // כיתוב-יושר על בר-השוק — מוצג רק אם יש בכלל בר-שוק היום (אחרת אין מה להסביר)
-  const bn = document.getElementById("barNote");
-  const anyMarket = TODAY.some(c => c.market_p_home != null);
-  bn.hidden = !anyMarket;
-  bn.textContent = anyMarket ? L.barNote : "";
-
-  const rc = document.getElementById("recentCalls");
-  rc.innerHTML = RECENT.length ? RECENT.map(c=>callCard(c,L,true)).join("") : `<div class="meta">${L.noRecent}</div>`;
+  // unified cubes
+  const cards = document.getElementById("cards");
+  if(view!=="today"){
+    cards.innerHTML = `<div class="empty-state">${view==="tomorrow"
+      ? TT("ניבויי-מחר ברענון-הבוקר","Tomorrow's calls at the morning refresh")
+      : TT("תוצאות-אתמול נצברות לאורך העונה","Yesterday's results accrue over the season")}</div>`;
+    return;
+  }
+  if(!GAMES.length){ cards.innerHTML = `<div class="empty-state">${quietText(L)}</div>`; return; }
+  const sorted = [...GAMES].sort((a,b)=>(isAplus(b)?1:0)-(isAplus(a)?1:0));   // A+ צף למעלה
+  cards.innerHTML = sorted.map(cubeHTML).join("");
 }
 
-function openHowto(){
-  var d = document.getElementById("howto");
-  if(d){ d.open = true; d.scrollIntoView({behavior:"smooth", block:"start"}); }
+// ===== shared infra: lang application, TZ time, guide modal, disclaimer modal, back-to-top =====
+function applyLang(){
+  document.body.dataset.applang = lang;                 // CSS toggles .l-he/.l-en
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang==="he") ? "rtl" : "ltr";
+  if(window.__totalsRerender) window.__totalsRerender();          // re-render totals dynamic content
+  if(document.getElementById("guide-modal").classList.contains("open")) renderGuide();
 }
+function openHowto(){ openGuide("winner"); }   // winner "how to read" → shared guide
+
+// localized start time (browser TZ): he 24h, en 12h. "" if unknown.
+function fmtGameTime(iso){
+  if(!iso) return "";
+  const d = new Date(iso); if(isNaN(d)) return "";
+  try{ return new Intl.DateTimeFormat(lang==="he"?"he-IL":"en-US",
+        {hour:"numeric",minute:"2-digit",hour12:(lang!=="he")}).format(d); }
+  catch(e){ return ""; }
+}
+function fmtGameDateTime(iso, fallbackDate){
+  const d = iso ? new Date(iso) : null;
+  let dpart="";
+  if(d && !isNaN(d)){ try{ dpart=new Intl.DateTimeFormat(lang==="he"?"he-IL":"en-US",
+        {month:"short",day:"numeric"}).format(d); }catch(e){} }
+  if(!dpart) dpart = fallbackDate ? fmtDate(fallbackDate) : "";
+  const t = fmtGameTime(iso);
+  return t ? `${dpart} · ${t}` : dpart;
+}
+
+// ---- guide modal (worldcup pattern; content per engine, bilingual via l-he/l-en) ----
+let __guideTab="winner";
+const GUIDE={
+  winner:`
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">01</span><h3><span class="l-he">הרעיון בשורה אחת</span><span class="l-en">The idea in one line</span></h3></div>
+    <p class="gv-lead"><span class="l-he">המנוע מדרג קבוצות (Elo) ו"מדבר" רק על קריאות A+ — הקריאות החזקות ביותר (~5% מהמשחקים). על השאר הוא שותק.</span><span class="l-en">The engine rates teams (Elo) and only "speaks" on A+ calls — its strongest reads (~5% of games). On the rest it stays silent.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">02</span><h3><span class="l-he">מהו A+</span><span class="l-en">What A+ is</span></h3></div>
+    <p><span class="l-he">שלב גבוה (8/9) <b>וגם</b> ביטחון ≥62%. היסטורית ~70% צודקות על הפרוסה הזו. ביטחון ≠ ודאות — 62% עדיין מפסיד ~4 מ-10.</span><span class="l-en">A high stage (8/9) <b>and</b> confidence ≥62%. Historically ~70% right on that slice. Confidence ≠ certainty — 62% still loses ~4 in 10.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">03</span><h3><span class="l-he">שני הברים: מנוע מול שוק</span><span class="l-en">The two bars: engine vs market</span></h3></div>
+    <ul><li><span class="l-he"><b>ירוק — המנוע:</b> P(הבית מנצח) לפי ה-Elo.</span><span class="l-en"><b>Green — engine:</b> P(home win) from the Elo.</span></li>
+    <li><span class="l-he"><b>כחול — השוק:</b> המחיר אחרי הסרת-וויג (no-vig).</span><span class="l-en"><b>Blue — market:</b> the price after removing the vig (no-vig).</span></li></ul></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">04</span><h3><span class="l-he">הפער — ובזהירות</span><span class="l-en">The gap — with care</span></h3></div>
+    <p><span class="gv-chip n">&lt;3%</span><span class="gv-chip v">3-10%</span><span class="gv-chip c">&gt;10%</span></p>
+    <p><span class="l-he">⚠️ במנצח, פער-גדול מול-השוק הוא לרוב <b>עיוורון-המנוע</b> — הזורק-הפותח של היום, שהשוק מתמחר וה-Elo לא רואה. זה <b>לא</b> המלצת-הימור.</span><span class="l-en">⚠️ For the winner, a large gap vs market is usually the <b>engine's blind spot</b> — today's starting pitcher, which the market prices and the Elo can't see. It is <b>not</b> a betting tip.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">05</span><h3><span class="l-he">"צמוד — שתיקה"</span><span class="l-en">"Too close — silent"</span></h3></div>
+    <p><span class="l-he">רוב המשחקים קרובים להטלת-מטבע; השוק יעיל. שתיקה ברוב הימים = השיטה עובדת, לא כישלון.</span><span class="l-en">Most games are near a coin-flip; the market is efficient. Silence on most days = the method working, not failure.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">06</span><h3><span class="l-he">אחרי המשחק</span><span class="l-en">After the match</span></h3></div>
+    <p><span class="l-he">כל קריאת-A+ מקבלת ✓/✗ ותוצאה, וה-track record מתמלא לאורך העונה.</span><span class="l-en">Every A+ call gets ✓/✗ and a result, and the track record fills over the season.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">07</span><h3><span class="l-he">חוב-יושר</span><span class="l-en">Honesty</span></h3></div>
+    <p><span class="l-he">הקריאות הן יתרון בקריאת-המשחק, לא הבטחה. נבדק מול תוצאות והיגיון-נאיבי — לא מול קווי-מהמרים.</span><span class="l-en">The calls are an edge in reading the game, not a promise. Tested vs results and naive logic — not vs bookmaker lines.</span></p></div>`,
+  totals:`
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">01</span><h3><span class="l-he">הרעיון בשורה אחת</span><span class="l-en">The idea in one line</span></h3></div>
+    <p class="gv-lead"><span class="l-he">מנוע נפרד שמנבא <b>כמה ריצות סך-הכל</b> (over/under), לא מי-ינצח. שני המנועים עונים על שתי שאלות שונות על אותו משחק.</span><span class="l-en">A separate engine predicting <b>total runs</b> (over/under), not who wins. The two engines answer two different questions on the same game.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">02</span><h3><span class="l-he">הברים: מנוע מול שוק</span><span class="l-en">The bars: engine vs market</span></h3></div>
+    <ul><li><span class="l-he"><b>ירוק — המנוע:</b> P(over) לקו (למשל 8.5), מ-λ הריצות.</span><span class="l-en"><b>Green — engine:</b> P(over) for the line (e.g. 8.5), from the runs λ.</span></li>
+    <li><span class="l-he"><b>כחול — השוק:</b> המחיר נטול-וויג (כשמחובר מקור-קווים).</span><span class="l-en"><b>Blue — market:</b> the no-vig price (when an odds source is connected).</span></li></ul></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">03</span><h3><span class="l-he">מתי A+</span><span class="l-en">When A+</span></h3></div>
+    <p><span class="gv-chip n">&lt;3% שתיקה</span><span class="gv-chip v">value</span><span class="gv-chip w">🛑 warning</span><span class="gv-chip c">⚠️ check</span></p>
+    <p><span class="l-he">A+ = פער ≥ cushion 3% <b>וגם</b> באזור-מכויל <b>וגם</b> לא-בזנב-קיצוני. פער-ענק לבדו ≠ A+ (לרוב טעות-מודל).</span><span class="l-en">A+ = gap ≥ 3% cushion <b>and</b> in a calibrated zone <b>and</b> not in an extreme tail. A huge gap alone ≠ A+ (usually model error).</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">04</span><h3><span class="l-he">"צמוד — שתיקה"</span><span class="l-en">"Too close — silent"</span></h3></div>
+    <p><span class="l-he">כרטיס מעומעם = המנוע מסכים עם השוק. השתיקה היא חלק מהשיטה; שקול-לשוק = תקין.</span><span class="l-en">A dimmed card = the engine agrees with the market. Silence is part of the method; in-line-with-market = fine.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">05</span><h3><span class="l-he">הוכרעו — דיוק over/under</span><span class="l-en">Decided — over/under accuracy</span></h3></div>
+    <p><span class="l-he">לכל משחק שהוכרע: הסך-בפועל + ✓/✗. דיוק-הכיוון הגולמי קרוב ל-50% — <b>תקין</b> בשוק יעיל; הערך הוא בכיול וב-A+, לא בכיוון.</span><span class="l-en">For each decided game: the actual total + ✓/✗. Raw direction accuracy ~50% is <b>healthy</b> in an efficient market; the edge is in calibration/A+, not raw direction.</span></p></div>
+  <div class="gv-sec"><div class="gv-ey"><span class="gv-num">06</span><h3><span class="l-he">CLV — מבחן-השוק</span><span class="l-en">CLV — the market test</span></h3></div>
+    <p><span class="l-he">השוואת המנוע לקו-הסגירה (forward-only). מתמלא כשמחובר מקור-קווים אמין.</span><span class="l-en">Compares the engine to the closing line (forward-only). Fills once a reliable odds source is connected.</span></p></div>`
+};
+function renderGuide(){
+  // לוח-מאוחד → דף-הסבר אחד: 🏆 מנצח ואז 📊 טוטאל באותו מודל.
+  document.getElementById("guideTitle").innerHTML =
+    '📖 <span class="l-he">איך לקרוא את הלוח</span><span class="l-en">How to read the board</span>';
+  document.getElementById("guideBody").innerHTML =
+    '<div class="gv-sec"><div class="gv-ey"><span class="gv-num">🏆</span><h3><span class="l-he">מנצח</span><span class="l-en">Winner</span></h3></div></div>'
+    + GUIDE.winner
+    + '<div class="gv-sec" style="border-top:1px solid var(--line);padding-top:14px"><div class="gv-ey"><span class="gv-num">📊</span><h3><span class="l-he">טוטאל ריצות</span><span class="l-en">Total runs</span></h3></div></div>'
+    + GUIDE.totals;
+}
+function openGuide(tab){ renderGuide();
+  document.getElementById("guide-modal").classList.add("open"); document.body.style.overflow="hidden"; }
+function closeGuide(){ document.getElementById("guide-modal").classList.remove("open"); document.body.style.overflow=""; }
+
+// ---- disclaimer + privacy modal (exact text from declarations doc; ncpgambling + gamcare; version A privacy) ----
+const DISCLAIMER_HTML=`
+  <div class="lgl l-he" dir="rtl">
+    <h4>כתב-ויתור</h4>
+    <p>הלוח והתכנים בו ניתנים <b>למטרות מידע ובידור בלבד</b>, ואינם מהווים ייעוץ פיננסי, השקעות, משפטי, מס או ייעוץ-הימורים, ואינם המלצה לבצע הימור או פעולה כלשהי. כל ההסתברויות הן <b>אומדנים הסתברותיים, לא ודאויות</b> — אין כל הבטחה לתוצאה, וביצועי-עבר אינם מבטיחים תוצאות-עתידיות. כל החלטה על-בסיס התכנים היא <b>באחריותך הבלעדית</b>, ואיננו אחראים לכל הפסד או נזק שעלול לנבוע מהסתמכות עליהם. התכנים אינם מתחשבים בנסיבותיך-האישיות או ברמת-הסיכון שלך. אנו <b>איננו מפעיל-הימורים, סַפָּר (bookmaker) או יועץ-פיננסי</b>, ואיננו מקבלים הימורים או כספים. השירות <b>חינמי</b>. נתונים ומחירי-שוק נאספים ממקורות-צד-ג' ועלולים להתעכב או לכלול אי-דיוקים. השימוש מותר מגיל <b>18</b> ומעלה, או גיל-הבגירות/ההימורים החוקי במקום-מגוריך — <b>הגבוה מביניהם</b>. אתה אחראי לוודא שהשימוש וכל הימור <b>חוקיים בשיפוט שלך</b> ולציית לחוק המקומי. אם הימורים פוגעים בך או במישהו שאתה מכיר — פנה לעזרה: <b>ארה"ב: <a href="https://www.ncpgambling.org" target="_blank" rel="noopener">ncpgambling.org</a> · בריטניה: <a href="https://www.gamcare.org.uk" target="_blank" rel="noopener">gamcare.org.uk</a></b>.</p>
+    <h4>פרטיות</h4>
+    <p>אתר זה הוא אתר-סטטי ו<b>אינו אוסף מידע-אישי</b>, אינו משתמש בקוקיז-מעקב ואינו מריץ אנליטיקס. האתר מתארח ב-GitHub Pages; כמארח, GitHub עשויה לרשום נתונים-טכניים (כגון כתובת-IP) בלוגי-השרת שלה, שאינם נגישים לנו. ראה את מדיניות-הפרטיות של GitHub: <a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">github privacy</a>. ליצירת-קשר: <a href="mailto:qmanagement613@gmail.com">qmanagement613@gmail.com</a>.</p>
+  </div>
+  <div class="lgl l-en" dir="ltr">
+    <h4>Disclaimer</h4>
+    <p>This dashboard and its content are provided <b>for informational and entertainment purposes only</b> and do not constitute financial, investment, legal, tax, or betting advice, nor a recommendation to place any bet or take any action. All probabilities are <b>probabilistic estimates, not certainties</b> — no outcome is guaranteed, and past performance does not guarantee future results. Any decision you make based on this content is <b>at your own risk</b>, and we accept no liability for any loss or damage arising from reliance on it. The content does not take into account your personal circumstances or risk tolerance. We are <b>not a gambling operator, bookmaker, or financial advisor</b>, and we do not accept bets or money. This service is <b>free</b>. Data and market prices are gathered from third-party sources and may be delayed or contain inaccuracies. Use is permitted only if you are <b>18</b> or older, or the legal age of majority/gambling where you live — <b>whichever is higher</b>. You are responsible for ensuring that use and any betting are <b>legal in your jurisdiction</b> and for complying with local law. If gambling is harming you or someone you know, please seek help: <b>US: <a href="https://www.ncpgambling.org" target="_blank" rel="noopener">ncpgambling.org</a> · UK: <a href="https://www.gamcare.org.uk" target="_blank" rel="noopener">gamcare.org.uk</a></b>.</p>
+    <h4>Privacy</h4>
+    <p>This is a static website and <b>does not collect personal information</b>, use tracking cookies, or run analytics. The site is hosted on GitHub Pages; as the host, GitHub may record technical data (such as your IP address) in its server logs, which we cannot access. See GitHub's Privacy Statement: <a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">github privacy</a>. Contact: <a href="mailto:qmanagement613@gmail.com">qmanagement613@gmail.com</a>.</p>
+  </div>`;
+function openDisclaimer(){ document.getElementById("disclaimerBody").innerHTML=DISCLAIMER_HTML;
+  document.getElementById("disclaimer-modal").classList.add("open"); document.body.style.overflow="hidden"; }
+function closeDisclaimer(){ document.getElementById("disclaimer-modal").classList.remove("open"); document.body.style.overflow=""; }
+
+// shared Escape closes any open modal
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeGuide(); closeDisclaimer(); } });
+
+// shared back-to-top (both tabs), respects prefers-reduced-motion
+const backTop=document.getElementById("backTop");
+addEventListener("scroll",()=>{ backTop.classList.toggle("show", scrollY>innerHeight*1.5); });
+backTop.onclick=()=>scrollTo({top:0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
 
 document.getElementById("langToggle").addEventListener("click",()=>{
-  lang = (lang==="en") ? "he" : "en"; render();
+  lang = (lang==="en") ? "he" : "en"; render(); applyLang();
 });
-render();
+render(); applyLang();
 
-// ===== טאב-טוטאל: IIFE מבודד (לא דורס render/howto/lang של המנצח) =====
-(function(){
-  const $=s=>document.querySelector(s);
-  // החלפת-טאבים
-  document.querySelectorAll(".etab").forEach(b=>b.addEventListener("click",()=>{
-    const tab=b.dataset.tab;
-    document.querySelectorAll(".etab").forEach(x=>{
-      const on=x.dataset.tab===tab;
-      x.classList.toggle("active",on);
-      if(on)x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current");
-    });
-    document.getElementById("tab-winner").hidden = tab!=="winner";
-    document.getElementById("tab-totals").hidden = tab!=="totals";
-  }));
-
-  function bar(cls,label,p){const pct=Math.round(p*100);
-    return `<div class="t-barrow"><span class="t-barlbl">${label}</span>
-      <div class="t-bartrack"><div class="t-barfill ${cls}" style="width:${Math.max(8,pct)}%">${pct}%</div></div></div>`;}
-
-  function card(g,silent){
-    const line=g.primary_line,p=g.p_over,mkt=g.market_p_over;
-    let tag=silent?`<span class="t-tag">צמוד — שתיקה</span>`:"";
-    if(g.verdict==="aplus")tag=`<span class="t-tag ap">A+ טוטאל</span>`;
-    if(g.verdict==="check_tail")tag=`<span class="t-tag warn">⚠️ בדוק — חשד טעות</span>`;
-    if(g.pitcher_changed)tag+=`<span class="t-tag warn">זורק הוחלף — לא תקף</span>`;
-    let bars=bar("eng",`מנוע OVER ${line}`,p);
-    if(mkt!=null)bars+=bar("mkt","שוק (no-vig)",mkt);
-    bars+=bar("eng",`מנוע UNDER ${line}`,1-p);
-    const rs=(g.reasons||[]).map(r=>`<div>• ${r}</div>`).join("");
-    return `<article class="t-game ${silent?'silent':''}">
-      <div class="t-teams">טוטאל: ${g.away} @ ${g.home} · קו ${line} ${tag}</div>
-      <div class="t-sub">λ מנוע = ${g.lambda_total} ריצות · park ×${g.park_factor}${g.park_uncertain?' ⚠️':''}</div>
-      <div>${bars}</div><div class="t-reasons">${rs}</div></article>`;
-  }
-
-  function tier3(){
-    if(!TLOG.decided)return `<div class="t-empty">CLV טרם נצבר — מבחן-שוק חי, forward-only.<br><span class="t-en">Empty until The Odds API key + data.</span></div>`;
-    const by=TLOG.by_verdict||{};
-    return `<div class="t-game"><div class="t-teams">מעקב מצטבר (מ-${TLOG.from})</div>
-      <div class="t-sub">הוכרעו: ${TLOG.decided} · A+: ${by.aplus||0} · שקט: ${by.silent||0} · no-market: ${by.no_market||0}</div>
-      <div class="t-reasons">⚠️ Brier engine-מול-market ימולא כשייאסף שוק (The Odds API).</div></div>`;
-  }
-
-  function decided(){
-    const d=TDECIDED||[];
-    if(!d.length)return `<div class="t-empty">טרם הוכרעו משחקי-טוטאל — נצבר לאורך העונה.<br><span class="t-en">No decided totals yet — builds over the season.</span></div>`;
-    // סקור-דיוק over/under (עצמאי-משוק)
-    const score = TLOG.ou_total
-      ? `<div class="t-score"><div>המנוע צדק ב-over/under <span class="t-en">· engine over/under accuracy</span></div>
-         <div class="big">${Math.round(TLOG.ou_correct/TLOG.ou_total*100)}%</div>
-         <div class="n">${TLOG.ou_correct} מתוך ${TLOG.ou_total}${TLOG.push?` · ${TLOG.push} push (הוצאו)`:""} · קו 8.5</div>
-         <div class="n" style="margin-top:6px">דיוק-כיוון גולמי על כל המשחקים. הערך-האמיתי של המנוע בכיול וב-A+, לא בכיוון-הגולמי — קרוב ל-50% תקין בשוק יעיל.<br><span class="t-en">Raw direction over all games; the edge is in calibration/A+, not raw direction — ~50% is healthy in an efficient market.</span></div></div>` : "";
-    const cards = d.map(r=>{
-      const p=parseFloat(r.engine_p_over);
-      const lean = isNaN(p)?"?":(p>0.5?`OVER ${r.line}`:`UNDER ${r.line}`);
-      let res;
-      if(r.engine_correct==="push") res=`<span class="t-push">PUSH — דחה (תוצאה על הקו)</span>`;
-      else if(r.engine_correct==="1") res=`<span class="t-ok">✓ צדק</span>`;
-      else if(r.engine_correct==="0") res=`<span class="t-miss">✗ טעה</span>`;
-      else res=`<span class="t-push">—</span>`;
-      return `<article class="t-game"><div class="t-teams">טוטאל: ${r.away} @ ${r.home} · קו ${r.line}</div>
-        <div class="t-result"><span class="t-push">מנוע: ${lean} · הסך בפועל: <b>${r.total_actual}</b></span> · ${res}</div></article>`;
-    }).join("");
-    return score + cards;
-  }
-
-  function render(view){
-    document.querySelectorAll("#t_dateChips .t-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.d===view));
-    const t1=$("#t_tier1"),t2=$("#t_tier2"),t3=$("#t_tier3");
-    $("#t_decided").innerHTML=decided();   // מצטבר — תמיד מוצג (כמו RECENT של המנצח)
-    t3.innerHTML=tier3();
-    if(view!=="today"){
-      t1.innerHTML=`<div class="t-empty">${view==="tomorrow"
-        ?"ניבויי-מחר ברענון-הבוקר / tomorrow at morning refresh"
-        :"תוצאות-אתמול ב-CLV (רובד 3) / yesterday in CLV"}</div>`; t2.innerHTML=""; return;
-    }
-    const games=TOTALS.games||[];
-    if(!games.length){t1.innerHTML=`<div class="t-empty">אין משחקי-טוטאל היום / no games today</div>`;t2.innerHTML="";return;}
-    const ap=games.filter(g=>g.verdict==="aplus");
-    t1.innerHTML=ap.length?ap.map(g=>card(g,false)).join("")
-      :`<div class="t-empty">אין קריאות-טוטאל A+ היום — <b>זה תקין</b> (שוק יעיל → A+ נדיר).<br><span class="t-en">No A+ today — healthy.</span></div>`;
-    const sorted=[...games].sort((a,b)=>(a.verdict==="aplus"?0:1)-(b.verdict==="aplus"?0:1));
-    const cards=sorted.map(g=>card(g,g.verdict==="silent"||g.verdict==="no_market"));
-    const head=cards.slice(0,5).join(""),rest=cards.slice(5).join("");
-    t2.innerHTML=head+(rest?`<div id="t_more" hidden>${rest}</div>
-      <button class="t-more" id="t_moreBtn" aria-expanded="false">הצג הכל (${cards.length}) / show all</button>`:"");
-    const mb=$("#t_moreBtn");
-    if(mb)mb.onclick=()=>{const m=$("#t_more");m.hidden=!m.hidden;mb.setAttribute("aria-expanded",!m.hidden);
-      mb.textContent=m.hidden?`הצג הכל (${cards.length}) / show all`:"הסתר / hide";};
-  }
-
-  function fresh(){const f=$("#t_fresh");
-    if(!TOTALS.updated){f.textContent="טרם נאספו נתונים / no data yet";return;}
-    let t=`עודכן לאחרונה ${TOTALS.updated} · ${TOTALS.has_market?"קווים נכון לעדכון":"אין שוק (טרם חובר מפתח Odds) — שקיפות בלבד"}`;
-    const u=new Date(TOTALS.updated.replace(" ","T"));
-    if(!isNaN(u)&&(Date.now()-u)/36e5>6){f.classList.add("stale");t="⚠️ ייתכן לא-עדכני · "+t;}
-    f.textContent=t;}
-
-  const dlg=$("#t_howto");
-  $("#t_howtoBtn").onclick=()=>{dlg.showModal();$("#t_howtoClose").focus();};
-  $("#t_howtoClose").onclick=()=>dlg.close();
-  dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close();});
-  const toTop=$("#t_toTop");
-  addEventListener("scroll",()=>{if(!document.getElementById("tab-totals").hidden)
-    toTop.classList.toggle("show",scrollY>innerHeight*1.5);});
-  toTop.onclick=()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
-  document.querySelectorAll("#t_dateChips .t-chip").forEach(c=>c.onclick=()=>render(c.dataset.d));
-  fresh(); render("today");
-})();
+// ניווט-תאריך: chips מחליפים view (רשימת-יום-יחיד; מחר/אתמול מציגים הודעה). render() כבר מטפל ב-l10n.
+document.querySelectorAll("#dateChips .chip").forEach(c=>c.addEventListener("click",()=>{ view=c.dataset.d; render(); }));
 </script>
 </body>
 </html>
